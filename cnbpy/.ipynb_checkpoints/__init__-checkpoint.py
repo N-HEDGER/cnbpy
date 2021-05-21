@@ -1,2 +1,2 @@
-from .datalad import SUBJECT, DATASET
+from .datalad import SUBJECT, DATASET, ABIDE_DATASET
 from .bids import BIDS

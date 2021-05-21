@@ -18,7 +18,7 @@ class DATASET:
     Class for initialising a dataset, using datalad.
     """
         
-    def __init__(self,local_base,source,isabide=False):
+    def __init__(self,local_base,source):
         
         """
         Initialise the DATASET class.
@@ -47,8 +47,6 @@ class DATASET:
         self.local_base=local_base
         self.dset=dl.Dataset(self.local_base)
         
-        if isabide:
-            self.get_abide_info()
         
     def install(self):
         
@@ -70,24 +68,9 @@ class DATASET:
         
         self.dset.remove()
         
-    def get_abide_info(self):
+
         
-        """
-        Retrieves ABIDE information.
-        
-        Returns
-        -------
-        self.demofile: The demographic files (pandas dataframe).
-        self.anat_q: The anatomical quality file (pandas dataframe).
-        self.func_q: The functional quality file (pandas dataframe).
-        """
-        
-    
-        self.demofile=pd.read_csv(os.path.join(DATA_PATH,'ABIDEII_Composite_Phenotypic.csv'), encoding = "ISO-8859-1")
-        self.anat_q=pd.read_csv(os.path.join(DATA_PATH,'anat_qap.csv'), encoding = "ISO-8859-1")
-        self.func_q=pd.read_csv(os.path.join(DATA_PATH,'functional_qap.csv'), encoding = "ISO-8859-1")
-        
-                    
+                
         
 class SUBJECT:
     
@@ -136,9 +119,31 @@ class SUBJECT:
 
 
 
-
-
+class ABIDE_DATASET(DATASET):
+    
+    """DATASET
+    Class for an ABIDE dataset.
+    
+    Additional methods for the ABIDE dataset go here.
+    Will inherit the properties of a regular DATASET class.
+    """
         
+    def __init__(self,local_base,source):
+            
+        """
+        Retrieves ABIDE information.
         
-
-
+        Returns
+        -------
+        self.demofile: The demographic files (pandas dataframe).
+        self.anat_q: The anatomical quality file (pandas dataframe).
+        self.func_q: The functional quality file (pandas dataframe).
+        """
+        
+    
+        self.demofile=pd.read_csv(os.path.join(DATA_PATH,'ABIDEII_Composite_Phenotypic.csv'), encoding = "ISO-8859-1")
+        self.anat_q=pd.read_csv(os.path.join(DATA_PATH,'anat_qap.csv'), encoding = "ISO-8859-1")
+        self.func_q=pd.read_csv(os.path.join(DATA_PATH,'functional_qap.csv'), encoding = "ISO-8859-1")
+        
+        super().__init__(local_base,source)
+    
