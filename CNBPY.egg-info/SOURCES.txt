@@ -1,0 +1,14 @@
+setup.py
+CNBPY.egg-info/PKG-INFO
+CNBPY.egg-info/SOURCES.txt
+CNBPY.egg-info/dependency_links.txt
+CNBPY.egg-info/requires.txt
+CNBPY.egg-info/top_level.txt
+cnbpy/__init__.py
+cnbpy/aws.py
+cnbpy/bids.py
+cnbpy/version.py
+cnbpy/test/data/ABIDEII_Composite_Phenotypic.csv
+cnbpy/test/data/anat_qap.csv
+cnbpy/test/data/dti_qap.csv
+cnbpy/test/data/functional_qap.csv
