@@ -106,16 +106,16 @@ class SUBJECT:
         Downloads the subject data using http://docs.datalad.org/en/stable/generated/man/datalad-get.html
 
         """
-        self.DATASET.dset.install(self.subject_path,get_data=True)
+        self.DATASET.dset.get(self.subject_path,get_data=True)
         
-    def remove(self):
+    def drop(self):
         
         """
-        Removes the subject data using http://docs.datalad.org/en/stable/generated/man/datalad-remove.html
+        Removes the subject data using http://docs.datalad.org/en/stable/generated/man/datalad-drop.html
 
         """
         
-        self.DATASET.dset.remove(self.subject_path)
+        self.DATASET.dset.drop(self.subject_path)
 
 
 
