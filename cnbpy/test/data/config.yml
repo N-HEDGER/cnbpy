@@ -1,0 +1,20 @@
+fmriprep:
+
+    type: 'cluster'
+    execute: 'sbatch'
+    
+    slurm:
+        --cpus-per-task: '16'
+        --mem-per-cpu : '4'
+        --mail-user: 'nhedger1@gmail.com'
+        -N: '1-1'
+    call:
+        ---output_spaces---: ['fsaverage','fsaverage5']
+        'optionals': ['--write-graph','--ignore slicetiming', '--low-mem']
+        ---mem_mb---: '30000'
+        ---ot---: '8'
+        ---nt---: '12'
+        opath_base: '' 
+        wpath_base: ''
+        dpath_base: ''
+    

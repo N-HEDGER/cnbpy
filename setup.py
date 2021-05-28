@@ -4,7 +4,7 @@ PACKAGES = find_packages()
 
 PACKAGES
 
-ver_file = os.path.join('cnbpy/', 'version.py')
+ver_file = os.path.join('cnbpy', 'version.py')
 with open(ver_file) as f:
     exec(f.read())
 

@@ -11,6 +11,8 @@ import pkg_resources
 DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
 
 
+    
+
 
 class DATASET:
     
@@ -146,4 +148,36 @@ class ABIDE_DATASET(DATASET):
         self.func_q=pd.read_csv(os.path.join(DATA_PATH,'functional_qap.csv'), encoding = "ISO-8859-1")
         
         super().__init__(local_base,source)
+        
+        
+class ABIDE_SUBJECT(SUBJECT):
+    
+    """DATASET
+    Class for an ABIDE dataset.
+    
+    Additional methods for the ABIDE dataset go here.
+    Will inherit the properties of a regular DATASET class.
+    """
+        
+    def __init__(self,DATASET,subid,subprefix='sub-'):
+            
+        """
+        Retrieves ABIDE information.
+        
+        Returns
+        -------
+        self.demofile: The demographic files (pandas dataframe).
+        self.anat_q: The anatomical quality file (pandas dataframe).
+        self.func_q: The functional quality file (pandas dataframe).
+        """
+        super().__init__(DATASET,subid,subprefix='sub-')
+    
+        self.row=np.where(ABIDE.demofile['SUB_ID']==int(subid))[0][0]
+        self.site=ABIDE.demofile['SITE_ID'][self.row]
+        
+        
+    
+    
+    
+    
     
