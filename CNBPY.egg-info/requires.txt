@@ -1,3 +1,5 @@
 numpy
 scipy
-statsmodels
+pandas
+datalad
+nest_asyncio

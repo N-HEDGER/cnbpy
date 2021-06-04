@@ -70,6 +70,16 @@ class DATASET:
         
         self.dset.remove()
         
+        
+        
+    def get_size(self):
+        
+        """
+        Reports the size of the dataset, in terms of that stored locally and that which is annexed.
+        """
+        
+        a=self.dset.status(annex='all')
+        
 
         
                 

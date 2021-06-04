@@ -9,7 +9,7 @@ Maintainer: Nicholas Hedger
 Maintainer-email: nhedger1@gmail.com
 License: GPL3
 Description: 
-        RSASD
+        CNBPY
         ========
         Placeholder
         License
@@ -26,4 +26,6 @@ Classifier: Programming Language :: Python
 Classifier: Topic :: Scientific/Engineering
 Requires: numpy
 Requires: scipy
-Requires: statsmodels
+Requires: pandas
+Requires: datalad
+Requires: nest_asyncio
