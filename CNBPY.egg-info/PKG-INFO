@@ -3,8 +3,8 @@ Name: CNBPY
 Version: 0.1.dev0
 Summary: cnbpy: a package for interacting with ABIDE 2 data
 Home-page: https://github.com/N-HEDGER/cnbpy
-Author: Nicholas Hedger
-Author-email: nhedger1@gmail.com
+Author: Nicholas Hedger, Brendan Williams, Carolyn McNabb
+Author-email: nhedger1@gmail.com, brendan.williams@pgr.reading.ac.uk
 Maintainer: Nicholas Hedger
 Maintainer-email: nhedger1@gmail.com
 License: GPL3

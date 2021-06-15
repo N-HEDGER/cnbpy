@@ -11,7 +11,7 @@ class BIDS:
     Class for a BIDS dataset.
     """
     
-    def __init__(self,path,func_fmt='.nii'):
+    def __init__(self,path,func_fmt='.nii', has_sessions = False):
         
         
         """
@@ -20,13 +20,15 @@ class BIDS:
         Parameters
         ----------
         path: Path to the directory where the dataset is stored (string).
-        func_fmt: What filetype identifies the functional data (optional, default= '.nii' string)
+        func_fmt: What filetype identifies the functional data (optional, default = '.nii'; string).
+        has_sessions: Boolean defining whether this dataset has multiple sessions (optional, default = False; Boolean).
         
         Returns
         -------
         self.subjects: Subjects in the BIDS directory (list).
         self.submessage: Message that prints what subjects were found.
-        self.sessions: What tasks were found per session, per subject (list).
+        self.sessions: What sessions were found per subject (list).
+        self.has_sessions: Boolean defining whether this dataset has multiple session. 
         self.sessmessage: Message that prints what sessions were found .
         self.tasks: What tasks were found per session, per subject (list).
         self.taskmessage: Message that prints the tasks found.
@@ -40,21 +42,27 @@ class BIDS:
 
         self.submessage=f"Found {len(self.subjects)} participant(s) {self.subjects}"
 
-        sessions = []
-        sessmessage=[]
-        for this_sub in self.subjects:
-            these_ses = [
-                op.basename(s).split('-')[1] for s in
-                sorted(
-                    glob(op.join(self.path, f'sub-{this_sub}', 'ses-*')))
-                if op.isdir(s)
-            ]
+        if has_sessions is not False:
+            self.has_sessions=True
+            sessions = []
+            sessmessage=[]
+            for this_sub in self.subjects:
+                these_ses = [
+                    op.basename(s).split('-')[1] for s in
+                    sorted(
+                        glob(op.join(self.path, f'sub-{this_sub}', 'ses-*')))
+                    if op.isdir(s)
+                ]
 
-            sessmessage.append(f"Found {len(these_ses)} session(s) for sub-{this_sub} {these_ses}")
-            sessions.append(these_ses)
+                sessmessage.append(f"Found {len(these_ses)} session(s) for sub-{this_sub} {these_ses}")
+                sessions.append(these_ses)
 
-        self.sessions=sessions
-        self.sessmessage=sessmessage
+            self.sessions=sessions
+            self.sessmessage=sessmessage
+        else:
+            self.has_sessions=False
+            self.sessions=[None] * len(self.subjects)
+            self.sessmessage="No sessions in this dataset"
 
         tasks=[]
         taskmessage=[]
@@ -125,13 +133,21 @@ class BIDS:
 
         """
 
-        ffunc_dir = op.join(self.path, f'sub-{sub}', f'ses-{ses}', 'func')
+        if self.has_sessions=True:
+            ffunc_dir = op.join(self.path, f'sub-{sub}', f'ses-{ses}', 'func')
+        else:
+            ffunc_dir = op.join(self.path, f'sub-{sub}', 'func')
 
         funcs = sorted(glob(op.join(ffunc_dir, f'*task-{task}*')))
         if not funcs:
-            raise ValueError(
-                "Could not find functional data with the following parameters:\n"
-                f"sub-{sub}, ses-{ses}, task-{task}")
+            if self.has_sessions=True:
+                raise ValueError(
+                    "Could not find functional data with the following parameters:\n"
+                    f"sub-{sub}, ses-{ses}, task-{task}")
+            else:
+                raise ValueError(
+                    "Could not find functional data with the following parameters:\n"
+                    f"sub-{sub}, task-{task}")
         return funcs
 
     def find_anats(self,sub,ses,weight='T1'):
@@ -152,14 +168,22 @@ class BIDS:
         """
         
 
-        anat_dir = op.join(self.path, f'sub-{sub}', f'ses-{ses}', 'anat')
+        if self.has_sessions=True:
+            anat_dir = op.join(self.path, f'sub-{sub}', f'ses-{ses}', 'anat')
+        else:
+            anat_dir = op.join(self.path, f'sub-{sub}', 'anat')
 
         anats = sorted(glob(op.join(anat_dir, f'*{weight}*')))
 
         if not anats:
-            raise ValueError(
-                "Could not find anatomical data with the following parameters:\n"
-                f"sub-{sub}, ses-{ses}, weight-{weight}")
+            if self.has_sessions=True:
+                raise ValueError(
+                    "Could not find anatomical data with the following parameters:\n"
+                    f"sub-{sub}, ses-{ses}, weight-{weight}")
+            else:
+                raise ValueError(
+                    "Could not find anatomical data with the following parameters:\n"
+                    f"sub-{sub}, weight-{weight}")
 
         return anats
 
