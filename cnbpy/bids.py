@@ -107,10 +107,11 @@ class BIDS:
         print(self.sessmessage)
         print(self.taskmessage)
 
-    def find_funcs(self,sub,ses,task):
+    def find_funcs(self,*,sub,task,ses=None):
         
         """
         Finds functional files for a given subject, session and task.
+        Keywords are forced. Not positional.
         
         Parameters
         ----------
@@ -124,8 +125,15 @@ class BIDS:
         
 
         """
+    
+        if ses != None:
 
-        ffunc_dir = op.join(self.path, f'sub-{sub}', f'ses-{ses}', 'func')
+            ffunc_dir = op.join(self.path, f'sub-{sub}', f'ses-{ses}', 'func')
+            
+        else:
+            ffunc_dir = op.join(self.path, f'sub-{sub}', 'func')
+            
+        print(ffunc_dir)
 
         funcs = sorted(glob(op.join(ffunc_dir, f'*task-{task}*')))
         if not funcs:
@@ -134,7 +142,7 @@ class BIDS:
                 f"sub-{sub}, ses-{ses}, task-{task}")
         return funcs
 
-    def find_anats(self,sub,ses,weight='T1'):
+    def find_anats(self,*,sub,ses=None,weight='T1'):
         
         """
         Finds anatomical files for a given subject, session.
@@ -151,8 +159,12 @@ class BIDS:
         
         """
         
-
-        anat_dir = op.join(self.path, f'sub-{sub}', f'ses-{ses}', 'anat')
+        if ses != None:
+            
+            anat_dir = op.join(self.path, f'sub-{sub}', f'ses-{ses}', 'anat')
+            
+        else: 
+            anat_dir = op.join(self.path, f'sub-{sub}', 'anat')
 
         anats = sorted(glob(op.join(anat_dir, f'*{weight}*')))
 
