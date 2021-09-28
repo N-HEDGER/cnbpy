@@ -1,0 +1,13 @@
+camera:
+    camera.azimuth: [67,290]
+    camera.altitude: [76]
+    surface.{subject}.unfold: [0.5,0.1]
+    surface.{subject}.depth: [0.5]
+    camera.radius: [154,255]
+    surface.{subject}.curvature.brightness: [0.39]
+    
+size:
+    sizex: 600
+    sizey: 300
+    
+
