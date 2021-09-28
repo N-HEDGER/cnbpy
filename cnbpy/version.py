@@ -53,4 +53,4 @@ MINOR = _version_minor
 MICRO = _version_micro
 VERSION = __version__
 PACKAGE_DATA = {'cnbpy': [pjoin('test', 'data', '*')]}
-REQUIRES = ["numpy","scipy","pandas","datalad","yaml","pkg_resources","itertools"]
+REQUIRES = ["numpy","scipy","pandas","datalad","nibabel"]
