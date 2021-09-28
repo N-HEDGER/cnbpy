@@ -10,13 +10,12 @@ Package for interacting with ABIDE data.
 
 ## For development:
 
-1. *Fork* to make your own version.
-2. *Git clone* into a local location on your own system.
-3. to install to your environment, use *python setup.py develop*
-4. Create a branch relevant to what you are working on e.g. *git branch fmriprep*
-5. *git checkout fmriprep*
-6. Make changes
-7. Test things in notebooks stored in /cnbpy/test/develop, with this at the top:
+1. *Git clone* into a local location on your own system.
+2. to install to your environment, use *python setup.py develop --user* (Not using --user will result in permission errors on Windows)
+3. Create a branch relevant to what you are working on e.g. *git branch fmriprep*
+4. *git checkout fmriprep*
+5. Make changes
+6. Test things in notebooks stored in /cnbpy/test/develop, with this at the top:
 
 ```python
 %load_ext autoreload
