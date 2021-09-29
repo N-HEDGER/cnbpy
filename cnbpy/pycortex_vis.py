@@ -108,10 +108,20 @@ def NormalizeData(data):
     return (data - np.nanmin(data)) / (np.nanmax(data) - np.nanmin(data))
 
 
+
+
+
+        
+        
+
+
+
+
 class webplotter():
     
+    
     def __init__(self,data,alpha,lims,cmaps,labels,subject,lthresh=0.01,vmax2=.2,outpath='/Users/nicholashedger/Documents/tmp',port=2245):
-        
+                
         self.port=port
         self.data=data
         self.alpha=alpha

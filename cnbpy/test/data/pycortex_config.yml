@@ -3,7 +3,7 @@ camera:
     camera.altitude: [76]
     surface.{subject}.unfold: [0.5,0.1]
     surface.{subject}.depth: [0.5]
-    camera.radius: [154,255]
+    camera.radius: [154]
     surface.{subject}.curvature.brightness: [0.39]
     
 size:
