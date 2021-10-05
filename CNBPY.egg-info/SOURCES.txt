@@ -8,10 +8,17 @@ cnbpy/__init__.py
 cnbpy/bids.py
 cnbpy/datalad.py
 cnbpy/fmriprep.py
+cnbpy/pycortex_vis.py
 cnbpy/scratchpad.py
 cnbpy/version.py
 cnbpy/test/data/ABIDEII_Composite_Phenotypic.csv
+cnbpy/test/data/L.params_59k.func.gii
+cnbpy/test/data/R.params_59k.func.gii
 cnbpy/test/data/anat_qap.csv
 cnbpy/test/data/config.yml
 cnbpy/test/data/dti_qap.csv
 cnbpy/test/data/functional_qap.csv
+cnbpy/test/data/pycortex_config.yml
+cnbpy/test/data/retinotopy_params.csv
+cnbpy/test/data/template.sh
+cnbpy/test/data/untitled.txt

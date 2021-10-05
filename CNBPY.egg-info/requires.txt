@@ -2,4 +2,4 @@ numpy
 scipy
 pandas
 datalad
-nest_asyncio
+nibabel

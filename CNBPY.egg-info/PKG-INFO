@@ -28,4 +28,4 @@ Requires: numpy
 Requires: scipy
 Requires: pandas
 Requires: datalad
-Requires: nest_asyncio
+Requires: nibabel

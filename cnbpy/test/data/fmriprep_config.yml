@@ -5,13 +5,12 @@ slurm:
     ---N---: '1-1'
 
 lpaths:
-    ---fsli---: '/freesurfer/license.txt'
-    ---fspath---: '/freesurfer'
+    ---fsli---: '/storage/research/cinn_comp/Resources/freesurfer/license.txt'
+    ---fspath---: '/storage/research/cinn_comp/Resources/freesurfer'
     ---workpath---: 'scratch'
-    ---basepath---: 'data'
     ---outpath---: 'output'
-    ---imagepath---: '/storage/basic/nh_leverhulme/UTILS/poldracklab_fmriprep_latest-2020-04-09-30f9d1d80eba.simg'
-    ---tfpath---: '/templateflow'
+    ---imagepath---: '/storage/research/cinn_comp/Resources/poldracklab_fmriprep_latest-2020-04-09-30f9d1d80eba.simg'
+    ---tfpath---: '/storage/research/cinn_comp/Resources/templateflow'
     
 spaths:
     ---fsli---: '/freesurfer/license.txt'
@@ -29,7 +28,7 @@ execution:
     ---execute---: False
 
 call:
-    ---output_spaces---: ['fsaverage','fsaverage5']
+    ---output_spaces---: ['fsaverage']
     ---optionals---: ['--write-graph','--ignore slicetiming', '--low-mem']
     ---mem_mb---: '30000'
     ---ot---: '8'

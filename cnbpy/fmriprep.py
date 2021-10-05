@@ -1,9 +1,10 @@
 import pkg_resources
 import yaml,os
+import re
 
 DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
 
-yaml_file=os.path.join(DATA_PATH,'config.yml')
+yaml_file=os.path.join(DATA_PATH,'fmriprep_config.yml')
 template_file=os.path.join(DATA_PATH,'template.sh')
 
 class FMRIPREP:
@@ -34,6 +35,12 @@ class FMRIPREP:
     def make_mounts(self):
         
         self.mounts=[self.make_mount(self.l_dict[mount],self.s_dict[mount]) for mount in self.m_dict['st_paths2mount']]
+        self.mount_dict = {"---mounts---":(' ').join(self.mounts)}
+        
+    def populate(self,cdict):
+        for e in cdict:
+            rS = re.compile(e)
+            self.working_string = re.sub(rS, cdict[e], self.working_string)
         
 
         
