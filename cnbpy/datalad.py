@@ -6,7 +6,7 @@ nest_asyncio.apply()
 import datalad.api as dl
 import pandas as pd
 import pkg_resources
-
+import numpy as np
 
 DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
 
@@ -59,7 +59,11 @@ class DATASET:
         
         dl.install(source=self.source,path=self.local_base)
         
+    
+    def get_all(self):
+        self.dset.get()
         
+    
     def remove(self):
         
         """
@@ -180,8 +184,10 @@ class ABIDE_SUBJECT(SUBJECT):
         """
         super().__init__(DATASET,subid,subprefix='sub-')
     
-        self.row=np.where(ABIDE.demofile['SUB_ID']==int(subid))[0][0]
-        self.site=ABIDE.demofile['SITE_ID'][self.row]
+        self.demorow=DATASET.demofile.iloc[np.where(DATASET.demofile['SUB_ID']==int(subid))[0][0]]
+        self.anatrow=DATASET.anat_q.iloc[np.where(DATASET.anat_q['Sub_ID']==int(subid))[0][0]]
+        self.funcrow=DATASET.func_q.iloc[np.where(DATASET.func_q['Sub_ID']==int(subid))[0][0]]
+        
         
         
     
