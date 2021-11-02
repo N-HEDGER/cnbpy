@@ -3,11 +3,15 @@ import os
 import nest_asyncio
 nest_asyncio.apply()
 
+import nibabel as nb
 import datalad.api as dl
 import pandas as pd
 import pkg_resources
 import numpy as np
-
+import s3fs
+from IPython.display import Javascript
+import datalad.api as dl
+from .bids import BIDS
 DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
 
 
@@ -59,8 +63,15 @@ class DATASET:
         
         dl.install(source=self.source,path=self.local_base)
         
-    
+
+        
+        
     def get_all(self):
+        
+        """
+        Gets (downloads) all the files in the dataset.
+        """
+        
         self.dset.get()
         
     
@@ -112,15 +123,21 @@ class SUBJECT:
         """
         self.subprefix=subprefix
         self.DATASET=DATASET
-        self.subject_path=self.subprefix+str(subid)
+        self.subid=subid
+        self.subject_path=self.subprefix+str(self.subid)
+        self.local_subject_path=os.path.join(self.DATASET.local_base,self.subject_path)
         
-    def get(self):
+    def get(self,flist=None):
         
         """
         Downloads the subject data using http://docs.datalad.org/en/stable/generated/man/datalad-get.html
 
         """
         self.DATASET.dset.get(self.subject_path,get_data=True)
+        
+        if flist != None:
+            self.DATASET.dset.get(os.path.join(self.subject_path,[f[i] for i in flist]),get_data=True)
+            
         
     def drop(self):
         
@@ -154,12 +171,24 @@ class ABIDE_DATASET(DATASET):
         self.func_q: The functional quality file (pandas dataframe).
         """
         
-    
+        super().__init__(local_base,source)
+        
         self.demofile=pd.read_csv(os.path.join(DATA_PATH,'ABIDEII_Composite_Phenotypic.csv'), encoding = "ISO-8859-1")
         self.anat_q=pd.read_csv(os.path.join(DATA_PATH,'anat_qap.csv'), encoding = "ISO-8859-1")
         self.func_q=pd.read_csv(os.path.join(DATA_PATH,'functional_qap.csv'), encoding = "ISO-8859-1")
+        self.remote_base='fcp-indi/data/Projects/ABIDE2'
         
-        super().__init__(local_base,source)
+        self.fmriprep_path=os.path.join(self.remote_base,'Outputs/fmriprep/fmriprep')
+        self.freesurfer_path=os.path.join(self.remote_base,'Outputs/fmriprep/freesurfer')
+        self.mriqc_path=os.path.join(self.remote_base,'Outputs/fmriprep/mriqc')
+        self.connection=s3fs.S3FileSystem(anon=True)
+        self.awsurl='https://s3.amazonaws.com/'
+        
+        fmriprepped_list=self.connection.ls(self.fmriprep_path)
+        self.fmriprepped_subs=[x.split('sub-', 1)[1] for x in fmriprepped_list if 'html' not in x and 'dataset_description' not in x and 'logs' not in x]
+        
+        
+        
         
         
 class ABIDE_SUBJECT(SUBJECT):
@@ -171,7 +200,7 @@ class ABIDE_SUBJECT(SUBJECT):
     Will inherit the properties of a regular DATASET class.
     """
         
-    def __init__(self,DATASET,subid,subprefix='sub-'):
+    def __init__(self,DATASET,subid,outpath,subprefix='sub-'):
             
         """
         Retrieves ABIDE information.
@@ -184,9 +213,116 @@ class ABIDE_SUBJECT(SUBJECT):
         """
         super().__init__(DATASET,subid,subprefix='sub-')
     
-        self.demorow=DATASET.demofile.iloc[np.where(DATASET.demofile['SUB_ID']==int(subid))[0][0]]
+        #self.demorow=DATASET.demofile.iloc[np.where(DATASET.demofile['SUB_ID']==int(subid))[0][0]]
         self.anatrow=DATASET.anat_q.iloc[np.where(DATASET.anat_q['Sub_ID']==int(subid))[0][0]]
         self.funcrow=DATASET.func_q.iloc[np.where(DATASET.func_q['Sub_ID']==int(subid))[0][0]]
+        self.fmriprep_path=os.path.join(DATASET.fmriprep_path,self.subject_path)
+        self.freesurfer_path=os.path.join(DATASET.freesurfer_path,self.subject_path)
+        self.mriqc_path=os.path.join(DATASET.mriqc_path,self.subject_path)
+        self.fmriprep_report=os.path.join(DATASET.awsurl,DATASET.fmriprep_path,self.subject_path+'.html')
+        self.outpath=outpath
+        self.local_subject_path=os.path.join(self.outpath,self.subject_path)
+        
+        
+        
+    def show_report(self,url):
+        
+        """
+        Shows the fmriprep report for the subject. Opens up a new browser window.
+
+        """
+        
+        display(Javascript('window.open("{url}");'.format(url=url)))
+        
+    def get_fmriprep_data(self):
+        
+        """
+        Creates a datlad dataset for the subjects fmriprep data.
+        
+        Returns
+        -------
+        self.fmriprep_dset: The fmriprep dataset for the subject (empty until using 'get').
+
+        """
+        
+        self.local_fmriprep_path=os.path.join(self.local_subject_path,'fmriprep',self.subject_path)
+        
+        
+        if os.path.exists(self.local_fmriprep_path): # If it exists, then just connect to it.
+            self.fmriprep_dset=dl.Dataset(self.local_fmriprep_path)
+            os.chdir(self.fmriprep_dset.path)
+        else: # Else, initialize a crawler.
+            os.makedirs(self.local_fmriprep_path,exist_ok=True)
+            self.fmriprep_dset=dl.Dataset.create(self.local_fmriprep_path)
+            os.chdir(self.fmriprep_dset.path)
+            dl.crawl_init(template='simple_s3',save=True,args=['bucket=fcp-indi','prefix=data/Projects/ABIDE2/Outputs/fmriprep/fmriprep/{subject}'.format(subject=self.subject_path),'drop_immediately=True'])
+        dl.crawl()
+        self.make_bids()
+    
+    
+    def make_bids(self):
+        self.bids=BIDS(os.path.join(self.local_subject_path,'fmriprep'))
+    
+    def get_fmriprep_outcomes(self,ses,run,task='rest'):
+        
+        """
+        Gets the surface data for the subject given a session, run and task
+        
+        """
+        
+        wcard='ses-{ses}/func/sub-{subject}_ses-{ses}_task-{task}_run-{run}_space-fsaverage5_hemi-{hem}.func.gii'
+        Lfile=wcard.format(subject=self.subid,ses=ses,task=task,run=run,hem='L')
+        Rfile=wcard.format(subject=self.subid,ses=ses,task=task,run=run,hem='R')
+        
+        print(Lfile,Rfile)
+        self.fmriprep_dset.get(Lfile)
+        self.fmriprep_dset.get(Rfile)
+        return os.path.join(self.local_fmriprep_path,Lfile),os.path.join(self.local_fmriprep_path,Rfile)
+    
+    
+    def get_sess_run_combs(self,task='rest',ext='gii'):
+        
+        """
+        Gets the available runs per session.
+        
+        """
+        
+        # Get the valid gifti files for the given task per session.
+        self.files_per_session=[self.bids.find_funcs(sub=self.subid,task=task,ses=int(ses),ext=ext) for ses in self.bids.sessions[0]]
+        self.runs_per_session=[int(len(i)/2) for i in self.files_per_session] # Get the number of runs per session (number of files /2).
+        
+        self.sess_run_combs=[]
+        # For each session
+        for i,v in enumerate(self.bids.sessions[0]):
+            # For the range of runs
+            for run in range(self.runs_per_session[i]):
+                # Append the current session to each of the runs within the session
+                self.sess_run_combs.append([v,str(run+1)])
+        
+        
+    def load_fmriprep_outcomes(self,ses,run,task='rest'):
+        
+        """
+        Loads the surface data for a given session, run and task
+        
+        """
+        
+        L,R=self.get_fmriprep_outcomes(ses,run,task='rest')
+        mygiftL=nb.gifti.giftiio.read(L)
+        mygiftR=nb.gifti.giftiio.read(R)
+        ts_dataL=mygiftL.agg_data()
+        ts_dataR=mygiftR.agg_data()
+        ts_data=np.vstack([ts_dataL,ts_dataR])
+        return ts_data
+        
+    
+        
+        
+        
+        
+
+        
+
         
         
         

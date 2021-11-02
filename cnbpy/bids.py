@@ -1,7 +1,7 @@
 import os.path as op
 from glob import glob
 import pandas as pd
-
+import json
 
 
 
@@ -93,9 +93,10 @@ class BIDS:
             self.taskmessage=taskmessage
             tasks.append(these_task)
         self.tasks=tasks
+    
 
 
-
+        
     def elaborate(self):
         
         """
@@ -107,7 +108,7 @@ class BIDS:
         print(self.sessmessage)
         print(self.taskmessage)
 
-    def find_funcs(self,*,sub,task,ses=None):
+    def find_funcs(self,*,sub,task,ses=None,ext='.nii.gz'):
         
         """
         Finds functional files for a given subject, session and task.
@@ -136,6 +137,7 @@ class BIDS:
         print(ffunc_dir)
 
         funcs = sorted(glob(op.join(ffunc_dir, f'*task-{task}*')))
+        funcs =[x for x in funcs if ext in x]
         if not funcs:
             raise ValueError(
                 "Could not find functional data with the following parameters:\n"
