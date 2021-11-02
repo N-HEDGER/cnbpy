@@ -11,6 +11,10 @@ class FMRIPREP:
     
     """FMRIPREP
     Class for running an fmriprep job using slurm.
+    
+    The idea is to take a template file and populate it with information contained in a yaml file.
+    
+    
     """
     
     
@@ -33,11 +37,11 @@ class FMRIPREP:
         with open(yaml_file, 'r') as f:
             self.yaml = yaml.safe_load(f)
             
-        self.slurm_dict = self.yaml['slurm']
-        self.l_dict= self.yaml['lpaths']
-        self.s_dict= self.yaml['spaths']
-        self.m_dict= self.yaml['mounts']
-        self.c_dict= self.yaml['call']
+        self.slurm_dict = self.yaml['slurm'] # dictionary of stuff for slurm.
+        self.l_dict= self.yaml['lpaths'] # dictionary of local paths
+        self.s_dict= self.yaml['spaths'] # dictionary of singularity paths
+        self.m_dict= self.yaml['mounts'] # dictionary of mounts to make.
+        self.c_dict= self.yaml['call'] # Things to be added to the call to fmriprep.
         
         # Read the jobscript template into memory.
         self.jobscript = open(template_file)
@@ -70,7 +74,6 @@ class FMRIPREP:
         
         
         """
-        
         
         self.c_dict['---output_spaces---']=' '.join(self.c_dict['---output_spaces---'])
         self.c_dict['---optionals---']=' '.join(self.c_dict['---optionals---'])

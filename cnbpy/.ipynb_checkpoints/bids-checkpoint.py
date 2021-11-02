@@ -93,6 +93,8 @@ class BIDS:
             self.taskmessage=taskmessage
             tasks.append(these_task)
         self.tasks=tasks
+        
+        self.load_all_jsons()
     
 
 
@@ -176,4 +178,19 @@ class BIDS:
                 f"sub-{sub}, ses-{ses}, weight-{weight}")
 
         return anats
+    
+    
+    def find_jsons(self):
+        self.jsons=glob(op.join(self.path, '*.json'))
+        
+    def load_json(self,file):
+        with open(file) as f:
+            key='json_'+op.split(file)[-1][:-5]
+            setattr(self, key, json.load(f))  
+                     
+    def load_all_jsons(self):
+        self.find_jsons()
+        [self.load_json(json) for json in self.jsons] 
+    
+
 

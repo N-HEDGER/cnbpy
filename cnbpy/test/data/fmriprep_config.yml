@@ -1,10 +1,10 @@
-slurm:
+slurm: # These are elements that go at the top of the top of the script that control the slurm settings (https://slurm.schedmd.com/sbatch.html)
     ---cpus-per-task---: '16'
     ---mem-per-cpu---: '4G'
-    --mail-user---: 'nhedger1@gmail.com'
+    ---mail-user---: 'nhedger1@gmail.com'
     ---N---: '1-1'
 
-lpaths:
+lpaths: # Local paths
     ---fsli---: '/storage/research/cinn_comp/Resources/freesurfer/license.txt' # Path to freesurfer license.
     ---fspath---: '/storage/research/cinn_comp/Resources/freesurfer'
     ---tfpath---: '/storage/research/cinn_comp/Resources/templateflow' # Templateflow path
@@ -17,8 +17,6 @@ lpaths:
     workpath_base: '/storage/research/cinn_comp/DUMP/WORK' # Base directory for fmriprep working directories.
     outpath_base: '/storage/research/cinn_comp/DUMP/OUTPUT' # Base directory for fmriprep outputs.
     
-    
-
     
 spaths: # Singularity mount locations
     ---fsli---: '/freesurfer/license.txt'
@@ -36,7 +34,7 @@ execution:
     ---type---: 'sbatch' 
     ---execute---: False
 
-call:
+call: # These are other arguments that get added to the fmriprep call.
     ---output_spaces---: ['fsaverage']
     ---optionals---: ['--write-graph','--ignore slicetiming', '--low-mem']
     ---mem_mb---: '30000'

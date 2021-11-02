@@ -93,6 +93,19 @@ class DATASET:
         
         a=self.dset.status(annex='all')
         
+    def make_flist(self):
+        self.flist=os.listdir(self.local_base)
+        
+    def get_info_files(self,info_suffixes=['.json','.tsv']):
+        self.make_flist()
+        self.infolist=[x for x in self.flist if any(y in x for y in info_suffixes)]
+        
+        self.dset.get([i for i in self.infolist],get_data=True)
+        
+        
+        
+        
+        
 
         
                 
