@@ -6,11 +6,11 @@
 #SBATCH --mem-per-cpu=---mem-per-cpu---
 #SBATCH --mail-user=---mail-user---
 #SBATCH --error=---error---
-
 #SBATCH --mail-type=ALL
 
+export SINGULARITYENV_TEMPLATEFLOW_HOME=---tfpath---
 
 
 
-singularity run --cleanenv ---mounts--- ---imagepath--- ---datapath--- ---outpath--- --participant-label ---pid--- -w ---workpath--- --output-spaces ---output_spaces--- --mem_mb ---mem_mb--- --fs-subjects-dir ---fsdir--- --omp-nthreads ---ot--- --nthreads ---nt--- --fs-license-file ---fsli--- ---optionals---
+singularity run --cleanenv ---mounts--- ---imagepath--- ---datapath--- ---outpath--- ---analysis_level--- --participant-label ---pid--- -w ---workpath--- --output-spaces ---output_spaces--- --mem_mb ---mem_mb--- --omp-nthreads ---ot--- --nthreads ---nt--- --fs-license-file ---fsli--- ---optionals---
 

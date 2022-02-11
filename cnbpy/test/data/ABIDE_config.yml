@@ -1,0 +1,64 @@
+rpaths:
+    remote_base: 'fcp-indi/data/Projects/ABIDE2'
+    fmriprep_path: 'fcp-indi/data/Projects/ABIDE2/Outputs/fmriprep/fmriprep'
+    freesurfer_path: 'fcp-indi/data/Projects/ABIDE2/Outputs/fmriprep/freesurfer'
+    aws_url: 'https://s3.amazonaws.com/'
+
+csvs:
+    demofile_name: 'ABIDEII_Composite_Phenotypic.csv'
+    anatfile_name: 'anat_qap.csv'
+    funcfile_name: 'functional_qap.csv'
+    encoding: 'ISO-8859-1'
+    
+data:
+    freesurfer_subject_dir: '/storage/basic/nh_leverhulme/freesurfer'
+    func_wildcard: 'ses-{ses}/func/sub-{subject}_ses-{ses}_task-{task}_run-{run}_space-fsaverage5_hemi-{hem}.func.gii'              
+    required_freesurfer_subfolders: ['mri','surf','label']
+    
+crawler:
+    bucketstring: 'bucket=fcp-indi'
+    template: 'simple_s3'
+    fmriprep_exclude: 'exclude=(anat)|(figures)|(.nii.gz)|(.nii)'
+    freesurfer_exclude: 'exclude=(.crv)|(.preaparc)|(.touch)|(.dat)|(.stats)|(.annot)|(.ctab)|(scripts)|(touch)|(stats)|(defect)|(nofix)|(pct)'
+    
+neuropythy:
+    benson_wildcard: 'python -m neuropythy benson14_retinotopy {sub} --subjects-dir={subdir} --surf-format {fmt} --no-volume-export'
+    output_fmt: 'mgz'
+    outsurf_wildcard: '{hem}.benson14_{param}.{fmt}'
+    resampled_outsurf_wildcard: '{hem}.benson14_{param}_resamp.{fmt}'
+    produced_params: ['angle','eccen','varea']
+    resamp_verts: 10242
+    
+cf_analysis:
+    cf_sizes: [0.5,1,2,3,4,5,7,10,20,30]
+    out_base: '/storage/basic/nh_leverhulme/DATA/ABIDE_CF_OUT'
+    csv_wildcard: '{subject}_{session}_{run}_{ROI}.csv'
+    long_csv_wildcard: '{subject}_{session}_{run}_{ROI}_long.csv'
+    webGL_wildcard: '{task}_{subject}_{session}_{run}_{ROI}_webGL'
+    ksplits: 5
+    pcx_subject: 'fsaverage5'
+    CF_fit_columns: ['V0','sigma','R2']
+    lookup_wildcard: '{ROI}_lookup.csv'
+    vars2wav: ['x','y','sigma','spliced_prf_eccentricity','spliced_prf_polar_angle'] 
+    vars2av: ['R2','xval_R2']
+    
+pybest: 
+    denoised_wildcard: '{subject}/ses-{ses}/denoising/{subject}_ses-{ses}_task-rest_space-fsaverage5_hemi-{hem}_desc-denoised_bold.npy'
+    
+singularity: 
+    smount: '/fs'
+    script_prefix: 'surf2surf' 
+    singularity_cmd_wildcard: 'singularity exec --cleanenv -B {lfspath}:{sfspath} {simage} bash {scriptloc}'
+    singularity_img: '/storage/research/cinn_comp/cnbpy_Resources/poldracklab_fmriprep_latest-2020-04-09-30f9d1d80eba.simg'
+    script_yml: '/home/users/yg916972/Software/cnbpy/cnbpy/test/data/sh_config.yml'
+    script_template: '/home/users/yg916972/Software/cnbpy/cnbpy/test/data/fs.sh'
+    script_outdir: '/storage/basic/nh_leverhulme/freesurfer/scripts'
+    
+    
+    
+    
+
+    
+    
+    
+

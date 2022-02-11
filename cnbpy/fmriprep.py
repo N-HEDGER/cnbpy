@@ -18,7 +18,7 @@ class FMRIPREP:
     """
     
     
-    def __init__(self,yaml_file=yaml_file,template_file=template_file,jobname='myfmriprep'):
+    def __init__(self,yaml_file=yaml_file,template_file=template_file,jobname='myfmriprep',pid='allsubs'):
         
         """
         Initialise the FMRIPREP class.
@@ -31,24 +31,39 @@ class FMRIPREP:
         
         
         """
-        self.jobname=jobname # Name to be given to job.
+        self.pid=pid
+        self.jobname=jobname
         
+        # The jobname is the generic jobname + the name of the subject
+        self.jobname=self.jobname+'_'+self.pid
+        
+        # Open the yaml
         self.yaml_file=yaml_file
         with open(yaml_file, 'r') as f:
             self.yaml = yaml.safe_load(f)
             
         self.slurm_dict = self.yaml['slurm'] # dictionary of stuff for slurm.
+        self.slurm_dict['---J---']=self.jobname
+        
+        # Load in the dictionaries.
         self.l_dict= self.yaml['lpaths'] # dictionary of local paths
         self.s_dict= self.yaml['spaths'] # dictionary of singularity paths
         self.m_dict= self.yaml['mounts'] # dictionary of mounts to make.
         self.c_dict= self.yaml['call'] # Things to be added to the call to fmriprep.
+        self.ex_dict=self.yaml['execution']
         
         # Read the jobscript template into memory.
         self.jobscript = open(template_file)
         self.working_string = self.jobscript.read()
         self.jobscript.close()
         
-        # Make the output paths.
+        # If all subjects (default) then we dont need to specify a participant label. So get rid of this.
+        if self.pid=='allsubs':
+            self.working_string=self.working_string.replace('--participant-label ---pid--- ','')
+        else:
+            self.c_dict['---pid---']=self.pid
+     
+        # Make all the required output paths.
         self.make_out_paths()
         self.prep_call_dict()
         
@@ -150,7 +165,6 @@ class FMRIPREP:
         
         """
         
-        
         for e in cdict:
             rS = re.compile(e)
             self.working_string = re.sub(rS, cdict[e], self.working_string)
@@ -168,8 +182,10 @@ class FMRIPREP:
         self.make_mounts()
         self.populate(self.c_dict)
         self.populate(self.mount_dict)
-        self.populate(self.l_dict)
+        self.populate(self.s_dict)
         self.populate(self.slurm_dict)
+        self.populate(self.l_dict)
+        
     
     def writeout(self):
         
@@ -184,6 +200,20 @@ class FMRIPREP:
         of = open(self.outfile,'w')
         of.write(self.working_string)
         of.close()
+        
+    def execute(self):
+        """
+        writeout
+        
+        Executes the jobscript
+        
+        """
+        
+        
+        os.system(self.ex_dict['---type---'] + ' ' + self.outfile)
+        
+        print('job {jobname} sent to slurm'.format(jobname=self.jobname))
+        print('You can view in the queue via squeue -u (my username)')
         
 
         

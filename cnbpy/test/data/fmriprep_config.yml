@@ -1,24 +1,23 @@
 slurm: # These are elements that go at the top of the top of the script that control the slurm settings (https://slurm.schedmd.com/sbatch.html)
     ---cpus-per-task---: '16'
     ---mem-per-cpu---: '4G'
-    ---mail-user---: 'nhedger1@gmail.com'
+    ---mail-user---: 'yg916972@reading.ac.uk' # The email to send progress to (I think it needs to be a UOR one)
     ---N---: '1-1'
 
-lpaths: # Local paths
-    ---fsli---: '/storage/research/cinn_comp/Resources/freesurfer/license.txt' # Path to freesurfer license.
-    ---fspath---: '/storage/research/cinn_comp/Resources/freesurfer'
-    ---tfpath---: '/storage/research/cinn_comp/Resources/templateflow' # Templateflow path
-    ---datapath---: '/storage/research/cinn_comp/nicktest' # The base directory of the data to be fmripreppred.
-    ---imagepath---: '/storage/research/cinn_comp/Resources/poldracklab_fmriprep_latest-2020-04-09-30f9d1d80eba.simg' # Path to the singularity image.
+lpaths: # Local paths (need to be changed)
+    ---fsli---: '/storage/research/cinn_comp/cnbpy_Resources/freesurfer/license.txt' # Path to freesurfer license.
+    ---fspath---: '/storage/research/cinn_comp/cnbpy_Resources/freesurfer'
+    ---tfpath---: '/storage/research/cinn_comp/cnbpy_Resources/templateflow' # Templateflow path
+    ---datapath---: '/storage/research/cinn_comp/cnbpy_Resources/FMRIPREP_EXAMP' # The base directory of the data to be fmripreppred.
+    ---imagepath---: '/storage/research/cinn_comp/cnbpy_Resources/poldracklab_fmriprep_latest-2020-04-09-30f9d1d80eba.simg' # Path to the singularity image.
     
-    job_path: '/storage/research/cinn_comp/DUMP/JOBS' #The place job scripts are to be stored.
+    job_path: '/storage/research/cinn_comp/cnbpy_Resources/JOBS' #The place job scripts are to be stored.
     job_wildcard: '{jobname}.sh' # Wildcard for job scripts
     err_wildcard: '{jobname}.err' # Wildcard for error files
-    workpath_base: '/storage/research/cinn_comp/DUMP/WORK' # Base directory for fmriprep working directories.
-    outpath_base: '/storage/research/cinn_comp/DUMP/OUTPUT' # Base directory for fmriprep outputs.
+    workpath_base: '/storage/research/cinn_comp/cnbpy_Resources/WORK' # Base directory for fmriprep working directories.
+    outpath_base: '/storage/research/cinn_comp/cnbpy_Resources/OUTPUT' # Base directory for fmriprep outputs.
     
-    
-spaths: # Singularity mount locations
+spaths: # Singularity mount locations (no need to change this)
     ---fsli---: '/freesurfer/license.txt'
     ---fspath---: '/freesurfer'
     ---workpath---: '/work'
@@ -26,19 +25,19 @@ spaths: # Singularity mount locations
     ---datapath---: '/data'
     ---tfpath---: '/templateflow'
     
-mounts: # Paths to mount.
-    st_paths2mount: ['---fsli---','---fspath---','---tfpath---','---workpath---','---outpath---','---datapath---']
-
+mounts: # Paths to mount (no need to change this).
+    st_paths2mount: ['---fspath---','---tfpath---','---workpath---','---outpath---','---datapath---']
 
 execution: 
     ---type---: 'sbatch' 
     ---execute---: False
 
 call: # These are other arguments that get added to the fmriprep call.
-    ---output_spaces---: ['fsaverage']
-    ---optionals---: ['--write-graph','--ignore slicetiming', '--low-mem']
+    ---output_spaces---: ['MNI152NLin2009cAsym']
+    ---optionals---: ['--write-graph','--ignore slicetiming', '--low-mem','--fs-no-reconall']
     ---mem_mb---: '30000'
     ---ot---: '8'
     ---nt---: '12'
+    ---analysis_level---: 'participant'
     
     
