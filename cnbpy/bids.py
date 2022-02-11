@@ -193,4 +193,38 @@ class BIDS:
         [self.load_json(json) for json in self.jsons] 
     
 
+    
+  
 
+    def find_tsv(self):
+        """
+        Finds participants.tsv file for the dataset.
+        
+        """
+        self.tsv=glob(op.join(self.path, 'participants.tsv'))
+
+            
+    def read_participants_tsv(self, file='participants.tsv'):
+        """
+        Reads participants.tsv file as Pandas dataframe.
+        
+        Parameters
+        ----------
+        file: default is 'participants.tsv'
+        
+        
+        Returns
+        -------
+        self.pcsv: pandas dataframe of 'participants.tsv'
+        
+        """
+        self.find_tsv()
+        self.pcsvpath=op.join(self.path,file)
+        if op.exists(self.pcsvpath):
+            self.pcsv=pd.read_csv(self.pcsvpath, sep='\t', engine='python')   
+            print("'participants.tsv' data saved to self.pcsv")
+        else:
+            print("No participants.tsv file for this dataset")
+        
+                      
+                  
