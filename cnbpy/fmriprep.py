@@ -105,6 +105,7 @@ class FMRIPREP:
         ----------
         self.outfile: The location for the jobscript to be output.
         self.errfile: The location for the errorfile to be output.
+        self.outfile: The location for the output of the batch script to be stored. 
         self.work_path: The location for the intermediate outputs to be stored 
         self.out_path: The location for the outputs of fmriprep to be stored.
         
@@ -113,6 +114,7 @@ class FMRIPREP:
         
         self.outfile=os.path.join(self.l_dict['job_path'],self.l_dict['job_wildcard'].format(jobname=self.jobname))
         self.errfile=os.path.join(self.l_dict['job_path'],self.l_dict['err_wildcard'].format(jobname=self.jobname))
+        self.outfile=os.path.join(self.l_dict['job_path'],self.l_dict['outfile_wildcard'].format(jobname=self.jobname))
         self.out_path=os.path.join(self.l_dict['outpath_base'],self.jobname)
         self.work_path=os.path.join(self.l_dict['workpath_base'],self.jobname)
         
@@ -128,6 +130,7 @@ class FMRIPREP:
         self.l_dict['---outpath---']=self.out_path
         self.l_dict['---workpath---']=self.work_path
         self.slurm_dict['---error---']=self.errfile
+        self.slurm_dict['---output---']=self.outfile
         
         
     def make_mount(self,lpath,spath):

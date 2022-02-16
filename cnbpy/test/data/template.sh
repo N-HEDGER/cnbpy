@@ -6,6 +6,7 @@
 #SBATCH --mem-per-cpu=---mem-per-cpu---
 #SBATCH --mail-user=---mail-user---
 #SBATCH --error=---error---
+#SBATCH --output=---output---
 #SBATCH --mail-type=ALL
 
 export SINGULARITYENV_TEMPLATEFLOW_HOME=---tfpath---

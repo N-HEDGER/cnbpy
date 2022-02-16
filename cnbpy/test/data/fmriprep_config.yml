@@ -14,6 +14,7 @@ lpaths: # Local paths (need to be changed)
     job_path: '/storage/research/cinn_comp/cnbpy_Resources/JOBS' #The place job scripts are to be stored.
     job_wildcard: '{jobname}.sh' # Wildcard for job scripts
     err_wildcard: '{jobname}.err' # Wildcard for error files
+    outfile_wildcard: '{jobname}.out' # Wildcard for slurm output file
     workpath_base: '/storage/research/cinn_comp/cnbpy_Resources/WORK' # Base directory for fmriprep working directories.
     outpath_base: '/storage/research/cinn_comp/cnbpy_Resources/OUTPUT' # Base directory for fmriprep outputs.
     
