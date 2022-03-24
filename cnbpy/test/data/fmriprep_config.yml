@@ -8,7 +8,7 @@ lpaths: # Local paths (need to be changed)
     ---fsli---: '/storage/research/cinn_comp/cnbpy_Resources/freesurfer/license.txt' # Path to freesurfer license.
     ---fspath---: '/storage/research/cinn_comp/cnbpy_Resources/freesurfer'
     ---tfpath---: '/storage/research/cinn_comp/cnbpy_Resources/templateflow' # Templateflow path
-    ---datapath---: '/storage/research/cinn_comp/cnbpy_Resources/FMRIPREP_EXAMP' # The base directory of the data to be fmripreppred.
+    ---datapath---: '/storage/research/cinn_comp/cnbpy_Resources/datalad_test' # The base directory of the data to be fmripreppred.
     ---imagepath---: '/storage/research/cinn_comp/cnbpy_Resources/poldracklab_fmriprep_latest-2020-04-09-30f9d1d80eba.simg' # Path to the singularity image.
     
     job_path: '/storage/research/cinn_comp/cnbpy_Resources/JOBS' #The place job scripts are to be stored.
@@ -33,8 +33,8 @@ execution:
     ---execute---: False
 
 call: # These are other arguments that get added to the fmriprep call.
-    ---output_spaces---: ['MNI152NLin2009cAsym']
-    ---optionals---: ['--write-graph','--ignore slicetiming', '--low-mem','--fs-no-reconall']
+    ---output_spaces---: ['MNI152NLin2009cAsym','fsaverage5']
+    ---optionals---: ['--write-graph','--ignore slicetiming', '--low-mem']
     ---mem_mb---: '30000'
     ---ot---: '8'
     ---nt---: '12'

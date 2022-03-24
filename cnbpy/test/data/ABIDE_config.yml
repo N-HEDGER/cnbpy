@@ -30,7 +30,7 @@ neuropythy:
     resamp_verts: 10242
     
 cf_analysis:
-    cf_sizes: [0.5,1,2,3,4,5,7,10,20,30]
+    cf_sizes: [0.5,1,2,3,4,5,7,10,20,30,40]
     out_base: '/storage/basic/nh_leverhulme/DATA/ABIDE_CF_OUT'
     csv_wildcard: '{subject}_{session}_{run}_{ROI}.csv'
     long_csv_wildcard: '{subject}_{session}_{run}_{ROI}_long.csv'

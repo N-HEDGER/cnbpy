@@ -179,7 +179,6 @@ class CF_analysis(object):
         inframe['hempref']=(inframe['V0']>self.subsurf.leftlim).astype(int)
         
 
-
         # We need to ensure that weights are not negative for the weighted averaging, due to the way numpy works
         xval4weights=np.copy(gf.xval_R2)
         xval4weights[xval4weights<0]=0.00001

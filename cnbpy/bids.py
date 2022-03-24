@@ -93,9 +93,7 @@ class BIDS:
             self.taskmessage=taskmessage
             tasks.append(these_task)
         self.tasks=tasks
-        
-        self.load_all_jsons()
-    
+            
 
 
         
@@ -135,8 +133,7 @@ class BIDS:
             
         else:
             ffunc_dir = op.join(self.path, f'sub-{sub}', 'func')
-            
-        print(ffunc_dir)
+
 
         funcs = sorted(glob(op.join(ffunc_dir, f'*task-{task}*')))
         funcs =[x for x in funcs if ext in x]

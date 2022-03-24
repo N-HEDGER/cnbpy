@@ -14,13 +14,14 @@ DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
 MMP_PATH = pkg_resources.resource_filename('cnbpy', 'test/data/HCP-MMP')
 
 class MMP_masker:
-    def __init__(self,MMPloc=MMP_PATH):
+    def __init__(self,MMPloc=MMP_PATH,space='fsaverage'):
         self.MMPloc=MMPloc
+        self.space=space
         self.load()
         
     def load(self):    
-        self.annotfile_L = os.path.join(self.MMPloc,'lh.HCP-MMP1.annot')
-        self.annotfile_R = os.path.join(self.MMPloc,'rh.HCP-MMP1.annot')
+        self.annotfile_L = os.path.join(self.MMPloc,'{space}_lh.HCP-MMP1.annot'.format(space=self.space))
+        self.annotfile_R = os.path.join(self.MMPloc,'{space}_rh.HCP-MMP1.annot'.format(space=self.space))
         
         self.lh_labels, self.lh_ctab, self.lh_names = nib.freesurfer.io.read_annot(self.annotfile_L)
         self.rh_labels, self.rh_ctab, self.rh_names = nib.freesurfer.io.read_annot(self.annotfile_R)
@@ -40,19 +41,19 @@ class MMP_masker:
         Lverts,Rverts=np.where(self.lh_labels==self.get_roi_index(label))[0],np.where(self.rh_labels==self.get_roi_index(label))[0]
         return Lverts, Rverts
     
-    def downsample(self,inarray,vertsperhem=10242):
+    def downsample(self,inarray):
         
         outarray=inarray[:vertsperhem]
         return outarray
         
-    def make_roi_mask(self,label,downsample=True,boolean=True):
+    def make_roi_mask(self,label,downsample=False,boolean=True,vertsperhem=10242):
         L_empty,R_empty=np.zeros(len(self.lh_labels)),np.zeros(len(self.rh_labels))
         Lverts,Rverts=self.get_roi_verts(label)
         L_empty[Lverts]=1
         R_empty[Rverts]=1
         
         if downsample==True:
-            L_empty,R_empty=self.downsample(L_empty),self.downsample(R_empty)
+            L_empty,R_empty=self.downsample(L_empty,vertsperhem=10242),self.downsample(R_empty,vertsperhem=10242)
         
         combined_mask=np.concatenate([L_empty,R_empty])
         
@@ -60,6 +61,10 @@ class MMP_masker:
              L_empty,R_empty,combined_mask=L_empty.astype(bool),R_empty.astype(bool),combined_mask.astype(bool)
             
         return L_empty, R_empty, combined_mask
+    
+    def make_composite_mask(self,labels):
+        roimasks=np.sum([self.make_roi_mask(label) for label in labels],axis=0)        
+        return roimasks
 
     
 class retinotopy_prior:

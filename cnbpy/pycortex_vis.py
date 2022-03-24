@@ -8,6 +8,9 @@ import pkg_resources
 import yaml
 import itertools
 import json
+import time
+from matplotlib.colors import Normalize
+
 
 
 DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
@@ -111,76 +114,91 @@ def NormalizeData(data):
 
 
 
-        
-        
-
-
-
-
 class webplotter():
     
     
-    def __init__(self,data,alpha,lims,cmaps,labels,subject,lthresh=0.01,vmax2=.2,outpath='/Users/nicholashedger/Documents/tmp',port=2245):
+    def __init__(self,data,lims,cmaps,labels,subject,outpath='/Users/nicholashedger/Documents/tmp',port=2245,pause=1,alpha=True,alphadat=[],lims2=[]):
                 
         self.port=port
         self.data=data
-        self.alpha=alpha
         self.lims=lims
+        self.lims2=lims2
         self.cmaps=cmaps
         self.labels=labels
         self.subject=subject
         self.curv = cortex.db.get_surfinfo(subject)
         self.curv.vmin = np.nanmin(self.curv.data)
         self.curv.vmax = np.nanmax(self.curv.data)
-        self.lthresh=lthresh
         self.outpath=outpath
+        self.pause=pause
+        self.alpha=alpha
+        self.alphadat=alphadat
+        
         self.alphalabs= ['alpha_'+ var for var in self.labels]
-        self.bothlabs=self.labels+self.alphalabs
-        self.vmax2=vmax2
+        
+        if self.alpha==True:
+            self.labels=self.labels+self.alphalabs
+            self.prep_curv()
+            
+            if len(self.lims2)==1:
+                self.lims2=self.lims2*len(self.data)
+                self.alphadat=self.alphadat*len(self.data)
+            
+        
+    def prep_curv(self):
+    
+        curv = cortex.db.get_surfinfo(self.subject)
+
+        curv.data = curv.data * .5
+
+        curv = cortex.Vertex(curv.data, self.subject, vmin=-.5,vmax=.5,cmap='gray')
+    
+       
+        
+        self.curv_rgb = np.vstack([curv.raw.red.data, curv.raw.green.data, curv.raw.blue.data])
+        
+        
+    
+    def prep_alpha_data(self,data1, data2, vmin, vmax, vmin2, vmax2,cmap):
+    
+        vx = cortex.Vertex(data1, self.subject, cmap=cmap, vmin=vmin, vmax=vmax)
+    
+        # Map to RGB
+        vx_rgb = np.vstack([vx.raw.red.data, vx.raw.green.data, vx.raw.blue.data])
+        norm2 = Normalize(vmin2, vmax2)   
+        # Pick an arbitrary region to mask out
+        # (in your case you could use np.isnan on your data in similar fashion)
+        alpha = np.clip(norm2(data2), 0, 1)
+        
+        # Alpha mask
+        display_data =  self.curv_rgb * (1-alpha) + vx_rgb * alpha
+    
+        # Create vertex RGB object out of R, G, B channels
+        return cortex.VertexRGB(*display_data, self.subject)   
+    
         
     def prep_data(self,data,vmin,vmax,cmap):
             
         vx = cortex.Vertex(np.array(data),vmin=vmin,vmax=vmax,cmap=cmap,subject=self.subject)
-        
         return vx
     
-    def prep_alpha_data(self,data,alpha,vmin,vmax,cmap,curvcmap = 'gray'):
-    
-        self.curv.cmap=curvcmap
-        
-        vx = cortex.Vertex(np.array(data),vmin=vmin,vmax=vmax,cmap=cmap,subject=self.subject)
-        
-        vx_rgb = np.vstack([vx.raw.red.data, vx.raw.green.data, vx.raw.blue.data])
-        curv_rgb = np.vstack([self.curv.raw.red.data, self.curv.raw.green.data, self.curv.raw.blue.data])*0.1
-    
-        alpha1 = NormalizeData(alpha)
-        alpha1[alpha<self.lthresh]=0
-        alpha1[alpha>self.vmax2]=np.nanmax(alpha1)
-        alpha1[alpha<self.vmax2]=NormalizeData(alpha1[alpha<self.vmax2])
-        alpha1 = alpha1.astype(np.float)
-        # Alpha mask
-        display_data = (vx_rgb * alpha1) + (curv_rgb * (1-alpha1))
-    
-        vx_fin = cortex.VertexRGB(*display_data.astype('uint8'), self.subject)
-        
-        return vx_fin
-        
-        
+
     def prep_all_data(self):
         self.vx_data=[]
         for i in range(len(self.data)):
             self.vx_data.append(self.prep_data(self.data[i],self.lims[i][0],self.lims[i][1],self.cmaps[i]))
+            
         
         for i in range(len(self.data)):
-            self.vx_data.append(self.prep_alpha_data(self.data[i],self.alpha[i],self.lims[i][0],self.lims[i][1],self.cmaps[i]))
+            self.vx_data.append(self.prep_alpha_data(self.data[i],self.alphadat[i],self.lims[i][0],self.lims[i][1],self.lims2[i][0],self.lims2[i][1],self.cmaps[i]))
             
-        self.data_dict = dict(zip(self.bothlabs, self.vx_data))
-        
+        self.data_dict = dict(zip(self.labels, self.vx_data))
+                    
     def show(self):
         
         self.prep_all_data()
-        self.handle=cortex.webshow(self.data_dict,port=self.port,labels_visible=(),overlays_visible=())
-        
+        self.handle=cortex.webshow(self.data_dict,port=self.port,labels_visible=(),overlays_visible=(),open_browser=False)
+        self.handle=self.handle.get_client()
         
     def internalize_plot_yaml(self,myml):
 
@@ -192,39 +210,78 @@ class webplotter():
             self.y = yaml.safe_load(f)
 
         self.camera_dict = self.y['camera']
+        
+        self.animation_dict=self.y['animation']
 
-        for key in self.camera_dict.keys():
-            setattr(self, key, self.camera_dict[key])
-            
-        self.perms=list(itertools.product(*[self.camera_dict[key] for key in self.camera_dict.keys()]))
-        
-        self.camera_dicts=[dict(zip(self.camera_dict.keys(), self.perms[i])) for i in range(len(self.perms))]
-        
+        self.camera_dicts=[self.camera_dict[key] for key in self.camera_dict.keys()]
         
         self.size_dict = self.y['size']
 
         for key in self.size_dict.keys():
             setattr(self, key, self.size_dict[key])        
-
+    
+    def make_animation_dicts(self):
+        self.animseq=[]
         
+        for key in self.animation_dict.keys():
+            vals=np.array([np.linspace(self.animation_dict[key]['start_dict'][skey],self.animation_dict[key]['end_dict'][skey],self.animation_dict[key]['nframes']) for skey in self.animation_dict[key]['start_dict'].keys()]).T
+
+            self.animseq.append([dict(zip(self.animation_dict[key]['start_dict'].keys(),i)) for i in vals])
+    
+    
+    def make_anim_snaps(self):
+        
+        for idx,cam in enumerate(self.animation_dict.keys()):
+        
+            for idx,cdict in enumerate(self.animseq[idx]): 
+                
+                
+                
+                cdict['camera.azimuth']= int(cdict['camera.azimuth'])
+                cdict['camera.altitude']= int(cdict['camera.altitude'])
+                cdict['camera.radius']= int(cdict['camera.radius'])
+                
+                print(cdict)
+                self.handle._set_view(**cdict)
+                
+                for _ in range(100):
+                    for k, v in cdict.items():
+                        k = k.format(subject=self.subject) if '{subject}' in k else k
+                        print(self.handle.ui.get(k)[0])
+                        if self.handle.ui.get(k)[0] != v:
+                        
+                            print('waiting for', k, self.handle.ui.get(k)[0], '->', v)
+                            time.sleep(0.1)
+                            continue
+                    break
+                time.sleep(0.1)
+                
+                file_name=os.path.join(self.outpath,'Anim_'+cam+"_{0:03}.png".format(idx))
+                self.handle.getImage(file_name, size=(self.sizex,self.sizey))
+                while not os.path.exists(file_name):
+                    pass
+                time.sleep(0.1)
+                
+    
     
     def make_snaps(self,label,camera_dict):
         
         
         self.handle._set_view(**camera_dict)
+        
         self.handle.draw()
+        time.sleep(self.pause)
         outstring=json.dumps(camera_dict)
         figpath=os.path.join(self.outpath,label+'_'+outstring+'.png')
         self.handle.getImage(figpath, size=(self.sizex,self.sizey))
         
         
     def make_data_snaps(self,label):
-        
         for camera_dict in self.camera_dicts:
             self.make_snaps(label,camera_dict)
             
     def make_all_snaps(self):
-        for lab in self.bothlabs:
+        for lab in self.labels:
             self.make_data_snaps(lab)
             self.handle.nextData()
 

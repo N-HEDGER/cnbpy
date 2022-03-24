@@ -31,6 +31,8 @@ class FMRIPREP:
         
         
         """
+        
+        print('hello carolyn')
         self.pid=pid
         self.jobname=jobname
         
@@ -216,11 +218,33 @@ class FMRIPREP:
         print('You can view in the queue via squeue -u (my username)')
         
 
+
+        
+class mriqc(FMRIPREP): 
+    
+    def say_hello(self):
+        print('hello')
+        self.hello='hello'
+        
+    def prep_call_dict(self):
+        
+        """
+        prep_call_dict
+        
+        Converts the lists into null-seperated strings so they can be read by the command line
         
         
+        """
         
+        self.c_dict['---output_spaces---']='_'.join(self.c_dict['---output_spaces---'])
+        self.c_dict['---optionals---']='_'.join(self.c_dict['---optionals---'])
         
+
         
+    
+    
+        
+  
         
         
         

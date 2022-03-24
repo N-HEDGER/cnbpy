@@ -1,13 +1,34 @@
 camera:
-    camera.azimuth: [67,290]
-    camera.altitude: [76]
-    surface.{subject}.unfold: [0.5,0.1]
-    surface.{subject}.depth: [0.5]
-    camera.radius: [154]
-    surface.{subject}.curvature.brightness: [0.39]
+    view_1:
+        camera.azimuth: 198
+        camera.altitude: 88
+        surface.{subject}.unfold: 0.5
+        surface.{subject}.depth: 0.5
+        camera.radius: 275
+        surface.{subject}.curvature.brightness: 0.39
+        
+animation:
+    animation1:
+        start_dict:
+            camera.azimuth: 0
+            camera.altitude: 95
+            camera.radius: 292
+        end_dict:
+            camera.azimuth: 317
+            camera.altitude: 79
+            camera.radius: 292
+        nframes: 30
+    animation2:
+        start_dict:
+            camera.azimuth: 317
+            camera.altitude: 79
+            camera.radius: 292
+        end_dict:
+            camera.azimuth: 317
+            camera.altitude: 79
+            camera.radius: 292
+        nframes: 30
     
 size:
-    sizex: 600
-    sizey: 300
-    
-
+    sizex: 400
+    sizey: 200

@@ -93,9 +93,7 @@ class BIDS:
             self.taskmessage=taskmessage
             tasks.append(these_task)
         self.tasks=tasks
-        
-        self.load_all_jsons()
-    
+            
 
 
         
@@ -135,8 +133,7 @@ class BIDS:
             
         else:
             ffunc_dir = op.join(self.path, f'sub-{sub}', 'func')
-            
-        print(ffunc_dir)
+
 
         funcs = sorted(glob(op.join(ffunc_dir, f'*task-{task}*')))
         funcs =[x for x in funcs if ext in x]
@@ -193,4 +190,38 @@ class BIDS:
         [self.load_json(json) for json in self.jsons] 
     
 
+    
+  
 
+    def find_tsv(self):
+        """
+        Finds participants.tsv file for the dataset.
+        
+        """
+        self.tsv=glob(op.join(self.path, 'participants.tsv'))
+
+            
+    def read_participants_tsv(self, file='participants.tsv'):
+        """
+        Reads participants.tsv file as Pandas dataframe.
+        
+        Parameters
+        ----------
+        file: default is 'participants.tsv'
+        
+        
+        Returns
+        -------
+        self.pcsv: pandas dataframe of 'participants.tsv'
+        
+        """
+        self.find_tsv()
+        self.pcsvpath=op.join(self.path,file)
+        if op.exists(self.pcsvpath):
+            self.pcsv=pd.read_csv(self.pcsvpath, sep='\t', engine='python')   
+            print("'participants.tsv' data saved to self.pcsv")
+        else:
+            print("No participants.tsv file for this dataset")
+        
+                      
+                  
