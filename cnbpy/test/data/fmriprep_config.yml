@@ -4,9 +4,9 @@ slurm: # These are elements that go at the top of the top of the script that con
     ---mail-user---: 'yg916972@reading.ac.uk' # The email to send progress to (I think it needs to be a UOR one)
     ---N---: '1-1'
 
-lpaths: # Local paths (need to be changed)
+lpaths: # Local paths.
     ---fsli---: '/storage/research/cinn_comp/cnbpy_Resources/freesurfer/license.txt' # Path to freesurfer license.
-    ---fspath---: '/storage/research/cinn_comp/cnbpy_Resources/freesurfer'
+    ---fspath---: '/storage/research/cinn_comp/cnbpy_Resources/freesurfer' # Path to freesurfer.
     ---tfpath---: '/storage/research/cinn_comp/cnbpy_Resources/templateflow' # Templateflow path
     ---datapath---: '/storage/research/cinn_comp/cnbpy_Resources/datalad_test' # The base directory of the data to be fmripreppred.
     ---imagepath---: '/storage/research/cinn_comp/cnbpy_Resources/poldracklab_fmriprep_latest-2020-04-09-30f9d1d80eba.simg' # Path to the singularity image.

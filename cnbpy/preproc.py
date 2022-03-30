@@ -14,14 +14,15 @@ import datalad.api as dl
 from .bids import BIDS
 import pkg_resources
 from copy import deepcopy
-data_path = pkg_resources.resource_filename('cnbpy', 'test/data')
+
+job_path = pkg_resources.resource_filename('cnbpy', 'jobs')
 
 import yaml
 from .utils import *
 
 
-pybest_template=os.path.join(data_path,'template_pybest.sh')
-pybest_yaml=os.path.join(data_path,'pybest_config.yml')
+pybest_template=os.path.join(job_path,'template_pybest.sh')
+pybest_yaml=os.path.join(job_path,'pybest_config.yml')
 
 class Preprocessor:
     
@@ -47,14 +48,36 @@ class Preprocessor:
         for key in cdict.keys():
             setattr(self, key, cdict[key])
             
+            
+            
     def make_pybest_script(self,yaml=pybest_yaml,template=pybest_template,jobstr='pybest'):
+        
+        """ make_pybest_script
+        Makes a pybest script for a given subject.
+        
+          Parameters
+        ----------
+        yaml: yaml file that contains information about the fmriprep job
+        template: A template script file to be populated with the information in pybest_yaml
+        """
+        
+        
         self.jobname=jobstr+'_'+self.subject.subid
-        supdict={'---J---':self.jobname,'---bids_dir---':self.subject.local_fmriprep_path_base,'---error---':os.path.join(self.subject.local_subject_path,self.jobname+'.err')}
-        self.pybest_job=Script_Populator(yaml_file=yaml,template_file=template,out_dir=self.subject.local_subject_path,jobname=self.jobname,suffix='.sh',supdict=supdict)
+        
+        
+        # We create an additional dictionary to populate with subject-relevant information.
+        supdict={'---J---':self.jobname,'---bids_dir---':self.subject.local_fmriprep_path_base,'---error---':os.path.join(self.denoised_out_dir,self.jobname+'.err'),'---output---':os.path.join(self.denoised_out_dir,self.jobname+'.out'),'---out_dir---':self.denoised_out_dir}
+        
+        
+        self.pybest_job=Script_Populator(yaml_file=yaml,template_file=template,out_dir=self.denoised_out_dir,jobname=self.jobname,suffix='.sh',supdict=supdict)
         self.pybest_job.populate()
         self.pybest_job.writeout()
         
     def run_pybest(self):
+        """ make_pybest_script
+        Runs the pybest job.
+        """
+        
         self.make_pybest_script()
         self.pybest_job.execute()
         

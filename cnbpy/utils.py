@@ -8,11 +8,126 @@ import numpy as np
 from scipy import stats
 from sklearn.model_selection import KFold
 import random
+import os
+
 
 DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
 
 MMP_PATH = pkg_resources.resource_filename('cnbpy', 'test/data/HCP-MMP')
 
+
+    
+
+
+
+class Script_Populator:
+    
+    """Script_Populator
+    Class for populating a script.
+    
+    The idea is to take a template file and populate it with information contained in a yaml file.
+    
+    
+    """
+    
+    
+    def __init__(self,yaml_file,template_file,out_dir,jobname='myfmriprep',suffix='.sh',**kwargs):
+        
+        """
+        Initialise the FMRIPREP class.
+        
+        Parameters
+        ----------
+        yaml_file: yaml file containing the information to be fed into the jobscript.
+        template_file: template file for the jobscript 
+        out_dir: Where to save the populated script.
+        jobname: The name given to the job.
+        
+        
+        An additional 'supdict' dictionary can be provided in kwargs to populate additional information.
+        This is useful in the case where the script needs to be populated on the fly.
+        
+        Parameters
+        ----------
+        
+        self.outfile: Script output location.
+        self.working_string: The unpopulated template script.
+        
+        """
+        self.jobname=jobname # Name to be given to job.
+        
+        self.yaml_file=yaml_file
+        
+        
+        with open(yaml_file, 'r') as f:
+            self.yaml = yaml.safe_load(f)
+        
+        # Append the supdict if it exists.
+        if 'supdict' in kwargs:
+            supdict = kwargs.get('supdict') 
+            self.yaml={**self.yaml, **supdict}
+        
+        # Read the jobscript template into memory.
+        self.jobscript = open(template_file)
+        self.working_string = self.jobscript.read()
+        self.jobscript.close()
+        
+        self.outfile=os.path.join(out_dir,jobname+suffix)
+        
+        
+    def populate(self):
+        
+        """ populate
+        
+        Populates the jobscript with items from the yaml
+        
+        Returns
+        ----------
+        self.working_string: populated script.
+        
+        """
+        
+        
+        for e in self.yaml:
+            rS = re.compile(e)
+            self.working_string = re.sub(rS, self.yaml[e], self.working_string)
+            
+    def writeout(self):
+        
+        """  writeout
+       
+        Writes out the jobscript file to the outfile location.
+        
+        """
+        
+        
+        of = open(self.outfile,'w')
+        of.write(self.working_string)
+        of.close()
+        
+    def execute(self,execute_type='sbatch'):
+        
+        """ execute
+        Executes the script.
+        """
+        
+        os.system(execute_type + " " + self.outfile)
+        print('{job} sent to SLURM'.format(job=self.jobname))
+
+
+
+def send_slurm_job(template,yaml,supdict,jobname,jobout):
+    
+    exdict={'---J---':jobname,'---error---':os.path.join(jobout,jobname+'.err'),'---output---':os.path.join(jobout,jobname+'.out')}
+
+    supdict={**supdict, **exdict}
+
+    job=Script_Populator(yaml_file=yaml,template_file=template,out_dir=jobout,jobname=jobname,suffix='.sh',supdict=supdict)
+    job.populate()
+    job.writeout()
+    job.execute()
+        
+        
 class MMP_masker:
     def __init__(self,MMPloc=MMP_PATH,space='fsaverage'):
         self.MMPloc=MMPloc
@@ -83,86 +198,8 @@ class retinotopy_prior:
         
     def downsample(self,inarray,vertsperhem=10242):
         outarray=inarray[:vertsperhem]
-        return outarray
-    
-
-
-
-class Script_Populator:
-    
-    """script_populator
-    Class for running an fmriprep job using slurm.
-    
-    The idea is to take a template file and populate it with information contained in a yaml file.
-    
-    
-    """
-    
-    
-    def __init__(self,yaml_file,template_file,out_dir,jobname='myfmriprep',suffix='.sh',**kwargs):
+        return outarray  
         
-        """
-        Initialise the FMRIPREP class.
-        
-        Parameters
-        ----------
-        yaml_file: yaml file containing the information to be fed into the fmriprep jobscript (provided in repo).
-        template_file: template file for the jobscript 
-        jobname: The name given to the job.
-        
-        
-        """
-        self.jobname=jobname # Name to be given to job.
-        
-        self.yaml_file=yaml_file
-        with open(yaml_file, 'r') as f:
-            self.yaml = yaml.safe_load(f)
-        if 'supdict' in kwargs:
-            supdict = kwargs.get('supdict') 
-            self.yaml={**self.yaml, **supdict}
-        
-        # Read the jobscript template into memory.
-        self.jobscript = open(template_file)
-        self.working_string = self.jobscript.read()
-        self.jobscript.close()
-        
-        self.outfile=os.path.join(out_dir,jobname+suffix)
-        
-        
-    def populate(self):
-        
-        """
-        populate
-        
-        Populates the jobscript with items from the specififed dictionary.
-        
-        """
-        
-        
-        for e in self.yaml:
-            rS = re.compile(e)
-            self.working_string = re.sub(rS, self.yaml[e], self.working_string)
-            
-    def writeout(self):
-        
-        """
-        writeout
-        
-        Writes out the jobscript file to the outfile location.
-        
-        """
-        
-        
-        of = open(self.outfile,'w')
-        of.write(self.working_string)
-        of.close()
-        
-    def execute(self,execute_type='sbatch'):
-        os.system(execute_type + " " + self.outfile)
-        
-        
-        
-import os
 
 def listdir_nohidden(path):
     return [f for f in os.listdir(path) if not f.startswith('.')]

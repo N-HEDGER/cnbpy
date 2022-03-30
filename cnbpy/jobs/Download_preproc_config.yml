@@ -1,0 +1,4 @@
+---cpus-per-task---: '1'
+---mem-per-cpu---: '1G'
+---mail-user---: 'yg916972@reading.ac.uk'
+---N---: '1-1'

@@ -1,6 +1,7 @@
 rpaths:
     remote_base: 'fcp-indi/data/Projects/ABIDE2'
     fmriprep_path: 'fcp-indi/data/Projects/ABIDE2/Outputs/fmriprep/fmriprep'
+    gifti_glob: 'sub-*/ses-*/func/*L.func.gii'
     freesurfer_path: 'fcp-indi/data/Projects/ABIDE2/Outputs/fmriprep/freesurfer'
     aws_url: 'https://s3.amazonaws.com/'
 
@@ -34,16 +35,35 @@ cf_analysis:
     out_base: '/storage/basic/nh_leverhulme/DATA/ABIDE_CF_OUT'
     csv_wildcard: '{subject}_{session}_{run}_{ROI}.csv'
     long_csv_wildcard: '{subject}_{session}_{run}_{ROI}_long.csv'
-    webGL_wildcard: '{task}_{subject}_{session}_{run}_{ROI}_webGL'
+    webGL_wildcard: '{subject}_{session}_{run}_{ROI}_webGL'
     ksplits: 5
     pcx_subject: 'fsaverage5'
     CF_fit_columns: ['V0','sigma','R2']
     lookup_wildcard: '{ROI}_lookup.csv'
-    vars2wav: ['x','y','sigma','spliced_prf_eccentricity','spliced_prf_polar_angle'] 
+    vars2wav: ['x','y','sigma'] 
     vars2av: ['R2','xval_R2']
     
-pybest: 
+visualisation:
+    vars2plot: ['spliced_prf_eccentricity','spliced_prf_polar_angle','sigma','R2','xval_R2']
+    cmaps: ['cubehelix','Retinotopy_RYBCR','nipy_spectral','plasma','plasma']
+    lims: [[0,8],[-3.14,3.14],[0,20],[0,.5],[0,.5]]
+    alphavar: 'R2'
+    lims2: [[0,0.5]]
+    pcx_sub: 'fsaverage5'
+    colorbar: False
+    rois: False
+    labels: False
+    alpha_plot_wildcard: 'alpha_{subject}_{session}_{run}_{ROI}_{Outcome}.png'
+    plot_wildcard: '{subject}_{session}_{run}_{ROI}_{Outcome}.png'
+    y: 3
+    x: 6
+    dpi: 150
+    
+    
+pybest:
+    denoised_out_dir: '/storage/basic/nh_leverhulme/pybest'
     denoised_wildcard: '{subject}/ses-{ses}/denoising/{subject}_ses-{ses}_task-rest_space-fsaverage5_hemi-{hem}_desc-denoised_bold.npy'
+    
     
 singularity: 
     smount: '/fs'

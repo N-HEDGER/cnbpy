@@ -1,0 +1,6 @@
+---space---: 'fsaverage5'
+---noise-source---: 'fmriprep'
+---cpus-per-task---: '4'
+---mem-per-cpu---: '1G'
+---mail-user---: 'yg916972@reading.ac.uk'
+---N---: '1-1'
