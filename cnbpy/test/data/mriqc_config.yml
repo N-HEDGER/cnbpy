@@ -1,0 +1,36 @@
+slurm: # These are elements that go at the top of the top of the script that control the slurm settings (https://slurm.schedmd.com/sbatch.html)
+    ---cpus-per-task---: '16'
+    ---mem-per-cpu---: '4G'
+    ---mail-user---: 'go912197@reading.ac.uk' # The email to send progress to (I think it needs to be a UOR one)
+    ---N---: '1-1'
+
+lpaths: # Local paths.
+    ---datapath---: '/storage/research/cinn_comp/cnbpy_Resources/datalad_test' # The base directory of the data to be fmripreppred.
+    ---imagepath---: '/storage/research/cinn_comp/cnbpy_Resources/mriqc.simg' # Path to the singularity image.
+    
+    job_path: '/storage/research/cinn_comp/cnbpy_Resources/JOBS' #The place job scripts are to be stored.
+    job_wildcard: '{jobname}.sh' # Wildcard for job scripts
+    err_wildcard: '{jobname}.err' # Wildcard for error files
+    outfile_wildcard: '{jobname}.out' # Wildcard for slurm output file
+    workpath_base: '/storage/research/cinn_comp/cnbpy_Resources/WORK' # Base directory for fmriprep working directories.
+    outpath_base: '/storage/research/cinn_comp/cnbpy_Resources/OUTPUT' # Base directory for fmriprep outputs.
+    
+spaths: # Singularity mount locations (no need to change this)
+    ---workpath---: '/work'
+    ---outpath---: '/out'
+    ---datapath---: '/data'
+
+mounts: # Paths to mount (no need to change this).
+    st_paths2mount: ['---workpath---','---outpath---','---datapath---']
+
+execution: 
+    ---type---: 'sbatch' 
+    ---execute---: False
+
+call: # These are other arguments that get added to the mriqc call.
+    ---optionals---: []
+    ---mem_gb---: '30'
+    ---ot---: '8'
+    ---analysis_level---: 'participant'
+    
+    
