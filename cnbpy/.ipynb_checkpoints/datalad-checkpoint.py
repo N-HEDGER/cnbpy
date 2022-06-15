@@ -276,7 +276,7 @@ class Abide_Subject(Subject):
 
     """
         
-    def __init__(self,Dataset,subid,subprefix='sub-',dicts=['data','crawler','neuropythy','singularity','pybest']):
+    def __init__(self,Dataset,subid,subprefix='sub-',dicts=['data','crawler','singularity','pybest']):
             
         """ init
         

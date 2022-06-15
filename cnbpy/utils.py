@@ -2,7 +2,7 @@ import pkg_resources
 import yaml,os
 import re
 import nibabel as nib
-import neuropythy as npy
+#import neuropythy as npy
 import numpy as np
 
 from scipy import stats
@@ -185,7 +185,7 @@ class MMP_masker:
 class retinotopy_prior:
     def __init__(self,sub='fsaverage'):
         self.sub=sub
-        self.subs = npy.data['benson_winawer_2018'].subjects
+#        self.subs = npy.data['benson_winawer_2018'].subjects
     
     def get_param(self,param,downsample=True):
         LDAT=self.subs[self.sub].lh.prop(param)
