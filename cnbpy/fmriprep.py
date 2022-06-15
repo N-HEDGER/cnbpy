@@ -32,7 +32,6 @@ class FMRIPREP:
         
         """
         
-        print('hello carolyn')
         self.pid=pid
         self.jobname=jobname
         

@@ -1,4 +1,16 @@
-import cortex
+
+import importlib
+
+spam_spec = importlib.util.find_spec("cortex")
+cortex_found = spam_spec is not None
+
+if cortex_found:
+    import cortex
+    print('Pycortex is installed and imported')
+    
+else: 
+    print('It appears pycortex is not installed. This will prevent you from using pycortex-related functionality')
+    
 import matplotlib.pyplot as plt
 import numpy as np
 import os

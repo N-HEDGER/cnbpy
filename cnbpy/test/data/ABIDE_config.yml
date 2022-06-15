@@ -1,21 +1,25 @@
+# Remote paths
 rpaths:
     remote_base: 'fcp-indi/data/Projects/ABIDE2'
     fmriprep_path: 'fcp-indi/data/Projects/ABIDE2/Outputs/fmriprep/fmriprep'
     gifti_glob: 'sub-*/ses-*/func/*L.func.gii'
     freesurfer_path: 'fcp-indi/data/Projects/ABIDE2/Outputs/fmriprep/freesurfer'
     aws_url: 'https://s3.amazonaws.com/'
-
+    
+# CSV names
 csvs:
     demofile_name: 'ABIDEII_Composite_Phenotypic.csv'
     anatfile_name: 'anat_qap.csv'
     funcfile_name: 'functional_qap.csv'
     encoding: 'ISO-8859-1'
-    
+
+# Data information
 data:
     freesurfer_subject_dir: '/storage/basic/nh_leverhulme/freesurfer'
-    func_wildcard: 'ses-{ses}/func/sub-{subject}_ses-{ses}_task-{task}_run-{run}_space-fsaverage5_hemi-{hem}.func.gii'              
+    func_wildcard: 'ses-{ses}/func/sub-{subject}_ses-{ses}_task-{task}_run-{run}_space-fsaverage5_hemi-{hem}.func.gii'             
     required_freesurfer_subfolders: ['mri','surf','label']
-    
+
+# Parameters for datalad crawler.
 crawler:
     bucketstring: 'bucket=fcp-indi'
     template: 'simple_s3'
