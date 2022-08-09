@@ -2,15 +2,15 @@ import os
 
 import nest_asyncio
 nest_asyncio.apply()
+import datalad.api as dl
+import s3fs
+
 
 import nibabel as nb
-import datalad.api as dl
 import pandas as pd
 import pkg_resources
 import numpy as np
-import s3fs
 from IPython.display import Javascript
-import datalad.api as dl
 from .bids import BIDS
 import pkg_resources
 import re
@@ -460,6 +460,12 @@ class Abide_Subject(Subject):
         return os.path.join(self.local_fmriprep_path,Lfile),os.path.join(self.local_fmriprep_path,Rfile)
     
     
+    
+    def get_TR_from_gii(self,gifti):
+        
+        giftidat=nib.load(gifti)
+        self.TR = float(giftidat.darrays[0].get_metadata()['TimeStep'])/1000
+    
     def load_fmriprep_outcomes(self,ses,run,task='rest'):
         
         """ load_fmriprep_outcomes
@@ -476,14 +482,23 @@ class Abide_Subject(Subject):
         
         
         """
-                
+        
         L,R=self.get_fmriprep_outcomes(ses,run,task='rest')
+        self.get_TR_from_gii(L)
         mygiftL=nb.gifti.giftiio.read(L)
         mygiftR=nb.gifti.giftiio.read(R)
         ts_dataL=mygiftL.agg_data()
         ts_dataR=mygiftR.agg_data()
         ts_data=np.vstack([ts_dataL,ts_dataR])
         return ts_data
+    
+    def load_fmriprep_confounds(self,ses,run,task='rest'):
+        
+        confound_frame = pd.read_csv(os.path.join(self.local_fmriprep_path,self.confounds_wildcard.format(subject=self.subid,ses=ses,task=task,run=run)), sep='\t', header=0,index_col=None)
+        
+        return confound_frame
+        
+        
     
     def get_pybest_outcomes(self,ses,run,task='rest'):
         

@@ -1,0 +1,82 @@
+dm: 
+    modalities: ['visual','somato']
+    MMPloc: '/tank/hedger/scripts/striatum_prf/striatum_prf/data/HCP-MMP'
+    with_mean: True
+    with_std: True
+    
+extra:
+    vertsperhem: 10242 
+
+    
+output:
+    webGL_wildcard: '{subject}_webGL'
+    out_base: '/storage/basic/nh_leverhulme/ABIDE'
+    out_npy_wildcard: '{param}.npy'
+    out_cifti_wildcard: '{param}.nii'
+    out_csv_wildcard: 'params.csv'
+    save_yhat: False
+    alphaname: 'best_alphas'
+    train_scorename: 'train_scores'
+    test_scorename: 'test_scores'
+    spliced_paramname: 'spliced_params'
+    npy: True
+    
+    
+subsurfaces:
+    premade_surface_dir: '/tank/hedger/scripts/striatum_prf/striatum_prf/data/surfaces/HCP'
+    subsurface_wildcard: '{modality}_subsurface.pickle'
+    surftype: 'sphere'
+    maskwcard: '{modality}_{hem}_mask.csv'
+    surfwcard: '{modality}_subsurface.pickle'
+    lookupwcard: '{modality}_lookup.csv'
+    maskdir: '/storage/basic/nh_leverhulme/ABIDE_SURF/masks/fsaverage5'
+    lookupdir: '/storage/basic/nh_leverhulme/ABIDE_SURF/lookups/fsaverage5'
+    surfdir: '/storage/basic/nh_leverhulme/ABIDE_SURF/surfaces/fsaverage5'
+    
+
+patches: 
+    visual:
+        roilabs: ['V1']
+        laplacians: 100
+        maskwcard: '/tank/hedger/scripts/striatum_prf/striatum_prf/data/masks/HCP/V1_{hem}_mask.csv'
+        lookup: '/tank/hedger/scripts/striatum_prf/striatum_prf/data/lookups/HCP/retprior.csv'
+        vars2splice: ['prf_eccentricity','prf_polar_angle']
+
+    somato:
+        roilabs: ['3b']
+        laplacians: 100
+        maskwcard: '/tank/hedger/scripts/striatum_prf/striatum_prf/data/masks/HCP/S1_{hem}_mask.csv'
+        lookup: '/tank/hedger/scripts/striatum_prf/striatum_prf/data/lookups/HCP/somprior.csv'
+        vars2splice: ['inflated_dist']
+
+
+
+modeling:
+    backend_engine: 'torch'
+    solver: "random_search"
+    n_iter: 20
+    n_targets_batch: 400
+    n_alphas_batch: 10
+    n_targets_batch_refit: 400
+    alpha_min: 1
+    alpha_max: 20
+    alpha_vals: 10
+    
+    
+splicing:
+    dot_product: [False,True]
+    pos_only: [True,True]
+    regress_out_mean: True
+    calc_size: False
+    calc_hempref: True
+    
+    
+plotting:
+    cmaps: ['plasma','plasma','nipy_spectral']
+    vars2plot: ['train_scores','test_scores','best_alphas']
+    plims: [[0,0.2],[0,0.2],[-10,20]]
+    pcx_sub: 'hcp_999999'
+    spliced_vars2plot: ['eccentricity_visual','angle_visual','inflated_dist_somato','size_visual','size_somato','hempref_diff_visual','hempref_diff_somato']
+    spliced_plims: [[0,8],[-180,180],[40,65],[0,60],[0,140],[-.001,0.001],[-.001,0.001]]
+    spliced_cmaps: ['cubehelix','Retinotopy_RYBCR','nipy_spectral','nipy_spectral','nipy_spectral','BuBkRd','BuBkRd']
+    lims2: [[0,0.2]]

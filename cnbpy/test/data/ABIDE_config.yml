@@ -16,8 +16,37 @@ csvs:
 # Data information
 data:
     freesurfer_subject_dir: '/storage/basic/nh_leverhulme/freesurfer'
-    func_wildcard: 'ses-{ses}/func/sub-{subject}_ses-{ses}_task-{task}_run-{run}_space-fsaverage5_hemi-{hem}.func.gii'             
-    required_freesurfer_subfolders: ['mri','surf','label']
+    func_wildcard: 'ses-{ses}/func/sub-{subject}_ses-{ses}_task-{task}_run-{run}_space-fsaverage5_hemi-{hem}.func.gii'
+    confounds_wildcard: 'ses-{ses}/func/sub-{subject}_ses-{ses}_task-rest_run-{run}_desc-confounds_regressors.tsv'
+    required_freesurfer_subfolders: ['mri','surf','label']    
+
+filter:
+    polyorder: 3
+    
+denoise: 
+    ncomps: 5
+    denoisevars: [
+    'std_dvars',
+    'dvars',
+    'framewise_displacement',
+    'a_comp_cor_00',
+    'a_comp_cor_01',
+    'a_comp_cor_02',
+    'a_comp_cor_03',
+    'a_comp_cor_04',
+    'a_comp_cor_05',
+    't_comp_cor_00',
+    't_comp_cor_01',
+    't_comp_cor_02',
+    't_comp_cor_03',
+    't_comp_cor_04',
+    'trans_x',
+    'trans_y',
+    'trans_z',
+    'rot_x',
+    'rot_y',
+    'rot_z',]
+    
 
 # Parameters for datalad crawler.
 crawler:

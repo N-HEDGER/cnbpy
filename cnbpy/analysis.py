@@ -15,7 +15,7 @@ from tqdm import tqdm
 import matplotlib.pyplot as plt
 import pkg_resources
 
-from cnbpy.pycortex_vis import webplotter
+from .pycortex_vis import webplotter
 
 from .utils import *
 
@@ -358,7 +358,10 @@ class CF_analysis(object):
         self.av_frame.to_csv(self.avcsv)
         self.fits_concat.to_csv(self.longcsv)
         
+
         
+        
+
         
 class Plotter:
 

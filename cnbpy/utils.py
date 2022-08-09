@@ -2,23 +2,30 @@ import pkg_resources
 import yaml,os
 import re
 import nibabel as nib
-import neuropythy as npy
 import numpy as np
 
-from scipy import stats
 from sklearn.model_selection import KFold
 import random
 import os
+
+import numpy as np
+import scipy.stats
+from sklearn.utils.validation import check_random_state
 
 
 DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
 
 MMP_PATH = pkg_resources.resource_filename('cnbpy', 'test/data/HCP-MMP')
 
+ABIDE_yaml=os.path.join(DATA_PATH,'ABIDE_config.yml')   
+
+
+def load_pkg_yaml():
+    with open(ABIDE_yaml, 'r') as f:
+        y = yaml.safe_load(f)
+    return y
 
     
-
-
 
 class Script_Populator:
     
@@ -156,7 +163,7 @@ class MMP_masker:
         Lverts,Rverts=np.where(self.lh_labels==self.get_roi_index(label))[0],np.where(self.rh_labels==self.get_roi_index(label))[0]
         return Lverts, Rverts
     
-    def downsample(self,inarray):
+    def downsample(self,inarray,vertsperhem):
         
         outarray=inarray[:vertsperhem]
         return outarray
@@ -168,7 +175,7 @@ class MMP_masker:
         R_empty[Rverts]=1
         
         if downsample==True:
-            L_empty,R_empty=self.downsample(L_empty,vertsperhem=10242),self.downsample(R_empty,vertsperhem=10242)
+            L_empty,R_empty=self.downsample(L_empty,vertsperhem=vertsperhem),self.downsample(R_empty,vertsperhem=vertsperhem)
         
         combined_mask=np.concatenate([L_empty,R_empty])
         
@@ -181,24 +188,6 @@ class MMP_masker:
         roimasks=np.sum([self.make_roi_mask(label) for label in labels],axis=0)        
         return roimasks
 
-    
-class retinotopy_prior:
-    def __init__(self,sub='fsaverage'):
-        self.sub=sub
-        self.subs = npy.data['benson_winawer_2018'].subjects
-    
-    def get_param(self,param,downsample=True):
-        LDAT=self.subs[self.sub].lh.prop(param)
-        RDAT=self.subs[self.sub].rh.prop(param)
-        
-        if downsample==True:
-            LDAT,RDAT=self.downsample(LDAT),self.downsample(RDAT)
-        combined_DAT=np.concatenate([LDAT,RDAT])
-        return combined_DAT
-        
-    def downsample(self,inarray,vertsperhem=10242):
-        outarray=inarray[:vertsperhem]
-        return outarray  
         
 
 def listdir_nohidden(path):
@@ -234,3 +223,48 @@ def cart2pol(x, y):
     rho = np.sqrt(x**2 + y**2)
     phi = np.arctan2(y, x)
     return(rho, phi)
+
+
+
+def generate_leave_one_run_out(n_samples, run_onsets, random_state=None,
+                               n_runs_out=1):
+    """Generate a leave-one-run-out split for cross-validation.
+    Generates as many splits as there are runs.
+    Parameters
+    ----------
+    n_samples : int
+        Total number of samples in the training set.
+    run_onsets : array of int of shape (n_runs, )
+        Indices of the run onsets.
+    random_state : None | int | instance of RandomState
+        Random state for the shuffling operation.
+    n_runs_out : int
+        Number of runs to leave out in the validation set. Default to one.
+    Yields
+    ------
+    train : array of int of shape (n_samples_train, )
+        Training set indices.
+    val : array of int of shape (n_samples_val, )
+        Validation set indices.
+    """
+    random_state = check_random_state(random_state)
+
+    n_runs = len(run_onsets)
+    # With permutations, we are sure that all runs are used as validation runs.
+    # However here for n_runs_out > 1, a run can be chosen twice as validation
+    # in the same split.
+    all_val_runs = np.array(
+        [random_state.permutation(n_runs) for _ in range(n_runs_out)])
+
+    all_samples = np.arange(n_samples)
+    runs = np.split(all_samples, run_onsets[1:])
+    if any(len(run) == 0 for run in runs):
+        raise ValueError("Some runs have no samples. Check that run_onsets "
+                         "does not include any repeated index, nor the last "
+                         "index.")
+
+    for val_runs in all_val_runs.T:
+        train = np.hstack(
+            [runs[jj] for jj in range(n_runs) if jj not in val_runs])
+        val = np.hstack([runs[jj] for jj in range(n_runs) if jj in val_runs])
+        yield train, val
