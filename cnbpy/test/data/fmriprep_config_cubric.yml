@@ -1,0 +1,46 @@
+slurm: # These are elements that go at the top of the top of the script that control the slurm settings (https://slurm.schedmd.com/sbatch.html)
+    ---cpus-per-task---: '8'
+    ---mem-per-cpu---: '4G'
+    ---mail-user---: 'mcnabbc1@cardiff.ac.uk' # The email to send progress to (I think it needs to be a UOR one)
+    ---N---: '1-1'
+
+lpaths: # Local paths.
+    ---fsli---: '/cubric/software/freesurfer/license.txt' # Path to freesurfer license.
+    ---fspath---: '/cubric/software/freesurfer/bin/' # Path to freesurfer.
+    ---tfpath---: '/home/sapcm15/gitlab/templateflow' # Templateflow path
+    ---datapath---: '/cubric/newscratch/314_wand/temp_cm/fmriprep_test' # The base directory of the data to be fmripreppred.
+    ---imagepath---: '/cubric/software/singularity.images/fmriprep_v2101.sif' # Path to the singularity image.
+    
+    job_path: '/cubric/newscratch/314_wand/temp_cm/fmriprep_test/derivatives/fmriprep/jobs' #The place job scripts are to be stored.
+    job_wildcard: '{jobname}.sh' # Wildcard for job scripts
+    err_wildcard: '{jobname}.err' # Wildcard for error files
+    outfile_wildcard: '{jobname}.out' # Wildcard for slurm output file
+    workpath_base: '/cubric/newscratch/314_wand/temp_cm/fmriprep_test/derivatives/fmriprep/work' # Base directory for fmriprep working directories.
+    outpath_base: '/cubric/newscratch/314_wand/temp_cm/fmriprep_test/derivatives/fmriprep/preprocessed' # Base directory for fmriprep outputs.
+    
+spaths: # Singularity mount locations (no need to change this)
+    ---fsli---: '/freesurfer/license.txt'
+    ---fspath---: '/freesurfer'
+    ---workpath---: '/work'
+    ---outpath---: '/out'
+    ---datapath---: '/data'
+    ---tfpath---: '/templateflow'
+
+    
+    
+mounts: # Paths to mount (no need to change this).
+    st_paths2mount: ['---fspath---','---tfpath---','---workpath---','---outpath---','---datapath---']
+
+execution: 
+    ---type---: 'sbatch' 
+    ---execute---: True
+
+call: # These are other arguments that get added to the fmriprep call.
+    ---output_spaces---: ['MNI152NLin2009cAsym:res-2','fsaverage5']
+    ---optionals---: ['--write-graph','--ignore slicetiming', '--low-mem', '--skip-bids-validation', '--md-only-boilerplate', '--stop-on-first-crash ', '--n_cpus $SLURM_CPUS_PER_TASK',]
+    ---mem_mb---: '30000'
+    ---ot---: '8'
+    ---nt---: '12'
+    ---analysis_level---: 'participant'
+    
+    
