@@ -8,15 +8,15 @@ lpaths: # Local paths.
     ---fsli---: '/cubric/software/freesurfer/license.txt' # Path to freesurfer license.
     ---fspath---: '/cubric/software/freesurfer/bin/' # Path to freesurfer.
     ---tfpath---: '/home/sapcm15/gitlab/templateflow' # Templateflow path
-    ---datapath---: '/cubric/newscratch/314_wand/temp_cm/fmriprep_test' # The base directory of the data to be fmripreppred.
+    ---datapath---: '/cubric/collab/314_wand/ses-03_fMRI' # The base directory of the data to be fmripreppred.
     ---imagepath---: '/cubric/software/singularity.images/fmriprep_v2101.sif' # Path to the singularity image.
     
-    job_path: '/cubric/newscratch/314_wand/temp_cm/fmriprep_test/derivatives/fmriprep/jobs' #The place job scripts are to be stored.
+    job_path: '/cubric/collab/314_wand/bids/derivatives/fmriprep/jobs' #The place job scripts are to be stored.
     job_wildcard: '{jobname}.sh' # Wildcard for job scripts
     err_wildcard: '{jobname}.err' # Wildcard for error files
     outfile_wildcard: '{jobname}.out' # Wildcard for slurm output file
-    workpath_base: '/cubric/newscratch/314_wand/temp_cm/fmriprep_test/derivatives/fmriprep/work' # Base directory for fmriprep working directories.
-    outpath_base: '/cubric/newscratch/314_wand/temp_cm/fmriprep_test/derivatives/fmriprep/preprocessed' # Base directory for fmriprep outputs.
+    workpath_base: '/cubric/collab/314_wand/bids/derivatives/fmriprep/work' # Base directory for fmriprep working directories.
+    outpath_base: '/cubric/collab/314_wand/bids/derivatives/fmriprep/preprocessed' # Base directory for fmriprep outputs.
     
 spaths: # Singularity mount locations (no need to change this)
     ---fsli---: '/freesurfer/license.txt'

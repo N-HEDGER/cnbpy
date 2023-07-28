@@ -5,7 +5,7 @@ import re
 DATA_PATH = pkg_resources.resource_filename('cnbpy', 'test/data')
 
 yaml_file=os.path.join(DATA_PATH,'fmriprep_config_cubric.yml')
-template_file=os.path.join(DATA_PATH,'template_cubric.sh')
+template_file=os.path.join(DATA_PATH,'template_cubric_SLURM.sh')
 
 class FMRIPREP:
     
